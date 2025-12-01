@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Send, CheckCircle } from 'lucide-react';
 import { SERVICES } from '../constants';
@@ -17,7 +18,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialSer
     timeline: '',
     message: ''
   });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [refId, setRefId] = useState('');
 
   useEffect(() => {
@@ -41,29 +42,41 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialSer
     // Generate Reference ID
     const newRefId = Math.random().toString(36).substr(2, 9).toUpperCase();
 
-    const submissionData = {
-      ...formData,
-      refId: newRefId,
-      _subject: `New Service Inquiry: ${formData.service} from ${formData.name}`,
-      _template: 'table',
-      _captcha: 'false',
-    };
+    // Use FormData for better compatibility with FormSubmit
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('email', formData.email); // This sets the Reply-To automatically
+    data.append('service', formData.service);
+    data.append('budget', formData.budget);
+    data.append('timeline', formData.timeline);
+    data.append('message', formData.message);
+    data.append('refId', newRefId);
+    
+    // FormSubmit Configuration
+    data.append('_subject', `New Service Inquiry: ${formData.service} from ${formData.name}`);
+    data.append('_template', 'table');
+    data.append('_captcha', 'false');
 
     try {
-        await fetch('https://formsubmit.co/ajax/itskiranbabu.ai@gmail.com', {
+        const response = await fetch('https://formsubmit.co/ajax/itskiranbabu.ai@gmail.com', {
             method: 'POST',
+            body: data,
             headers: { 
-                'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            },
-            body: JSON.stringify(submissionData)
+            }
         });
+
+        if (response.ok) {
+            setRefId(newRefId);
+            setStatus('success');
+        } else {
+             setStatus('error');
+             console.error("Submission failed");
+        }
     } catch (error) {
         console.error("Form submission error:", error);
+        setStatus('error');
     }
-    
-    setRefId(newRefId);
-    setStatus('success');
   };
 
   return (
@@ -137,6 +150,9 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialSer
               <h3 className="text-2xl font-bold text-white mb-6">Book Service</h3>
               
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Honeypot */}
+                <input type="text" name="_honey" style={{ display: 'none' }} />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
@@ -225,6 +241,12 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose, initialSer
                     placeholder="Describe your project requirements..."
                   />
                 </div>
+
+                 {status === 'error' && (
+                    <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-lg text-red-200 text-xs">
+                        Network error. Please try again or email directly.
+                    </div>
+                )}
 
                 <button
                   type="submit"

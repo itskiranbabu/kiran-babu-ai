@@ -2,19 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { X, Tag, ArrowRight, ExternalLink, ShoppingBag, AlertCircle, CheckCircle } from 'lucide-react';
 import { Product } from '../types';
+import { DISCOUNT_CODES } from '../constants';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   product: Product | null;
 }
-
-// Discount Codes "Database"
-const VALID_CODES: Record<string, number> = {
-  'SAVE20': 0.20, // 20% off
-  'WELCOME': 0.10, // 10% off
-  'PRO50': 0.50,  // 50% off
-};
 
 const ProductCheckoutModal: React.FC<Props> = ({ isOpen, onClose, product }) => {
   const [discountCode, setDiscountCode] = useState('');
@@ -50,8 +44,8 @@ const ProductCheckoutModal: React.FC<Props> = ({ isOpen, onClose, product }) => 
     if (!discountCode.trim()) return;
 
     const codeUpper = discountCode.trim().toUpperCase();
-    if (VALID_CODES[codeUpper]) {
-      setAppliedDiscount({ code: codeUpper, percent: VALID_CODES[codeUpper] });
+    if (DISCOUNT_CODES[codeUpper]) {
+      setAppliedDiscount({ code: codeUpper, percent: DISCOUNT_CODES[codeUpper] });
       setError('');
     } else {
       setError('Invalid discount code');
@@ -155,6 +149,14 @@ const ProductCheckoutModal: React.FC<Props> = ({ isOpen, onClose, product }) => 
                     <CheckCircle size={12} /> Code <strong>{appliedDiscount.code}</strong> applied! (-{appliedDiscount.percent * 100}%)
                 </div>
               )}
+              
+              {/* Demo Hint */}
+              {!appliedDiscount && !error && (
+                <div className="mt-2 text-[10px] text-gray-600">
+                    Try codes: <span className="font-mono text-brand-500/80">SAVE20</span>, <span className="font-mono text-brand-500/80">PRO50</span>
+                </div>
+              )}
+
             </form>
           ) : (
              <div className="text-sm text-gray-400 italic">

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Send, CheckCircle, Loader2, Calendar, ClipboardList } from 'lucide-react';
@@ -18,7 +19,7 @@ const BookCall: React.FC = () => {
     timeline: '',
     message: ''
   });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [refId, setRefId] = useState('');
 
   // Update selected service if URL parameter changes
@@ -40,30 +41,42 @@ const BookCall: React.FC = () => {
     // Generate Reference ID immediately
     const newRefId = Math.random().toString(36).substr(2, 9).toUpperCase();
     
-    const submissionData = {
-      ...formData,
-      refId: newRefId,
-      _subject: `New Inquiry: ${formData.service} from ${formData.name}`,
-      _template: 'table',
-      _captcha: 'false', 
-    };
+    // Use FormData for better compatibility with FormSubmit
+    const data = new FormData();
+    data.append('name', formData.name);
+    data.append('email', formData.email); // This sets the Reply-To automatically
+    data.append('service', formData.service);
+    data.append('budget', formData.budget);
+    data.append('timeline', formData.timeline);
+    data.append('message', formData.message);
+    data.append('refId', newRefId);
+    
+    // FormSubmit Configuration
+    data.append('_subject', `New Inquiry: ${formData.service} from ${formData.name}`);
+    data.append('_template', 'table');
+    data.append('_captcha', 'false');
 
     try {
-        await fetch('https://formsubmit.co/ajax/itskiranbabu.ai@gmail.com', {
+        const response = await fetch('https://formsubmit.co/ajax/itskiranbabu.ai@gmail.com', {
             method: 'POST',
+            body: data,
             headers: { 
-                'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            },
-            body: JSON.stringify(submissionData)
+            }
         });
+
+        if (response.ok) {
+            setRefId(newRefId);
+            setStatus('success');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            console.error("Server responded with error");
+            setStatus('error');
+        }
     } catch (error) {
         console.error("Form submission error:", error);
+        setStatus('error');
     }
-
-    setRefId(newRefId);
-    setStatus('success');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (status === 'success') {
@@ -126,15 +139,15 @@ const BookCall: React.FC = () => {
             <ul className="space-y-4">
               <li className="flex gap-3">
                 <div className="w-6 h-6 rounded-full bg-brand-900/50 text-brand-400 flex items-center justify-center text-xs font-bold border border-brand-500/30 shrink-0">1</div>
-                <p className="text-gray-400 text-sm">I will review your project requirements within <span className="text-white">24 hours</span>.</p>
+                <p className="text-gray-400 text-sm">I will review your project requirements personally within <span className="text-white">24 hours</span>.</p>
               </li>
               <li className="flex gap-3">
                 <div className="w-6 h-6 rounded-full bg-brand-900/50 text-brand-400 flex items-center justify-center text-xs font-bold border border-brand-500/30 shrink-0">2</div>
-                <p className="text-gray-400 text-sm">You'll receive an email at <span className="text-white">{formData.email}</span> with a booking link or follow-up questions.</p>
+                <p className="text-gray-400 text-sm">You (the client) will receive an email at <span className="text-white underline decoration-brand-500/30">{formData.email}</span> with a scheduling link.</p>
               </li>
               <li className="flex gap-3">
                 <div className="w-6 h-6 rounded-full bg-brand-900/50 text-brand-400 flex items-center justify-center text-xs font-bold border border-brand-500/30 shrink-0">3</div>
-                <p className="text-gray-400 text-sm">We'll hop on a discovery call to finalize the strategy and timeline.</p>
+                <p className="text-gray-400 text-sm">We'll hop on a discovery call to finalize the strategy.</p>
               </li>
             </ul>
         </div>
@@ -168,6 +181,10 @@ const BookCall: React.FC = () => {
       <FadeIn delay={100}>
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 md:p-10 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Honeypot for spam bots */}
+            <input type="text" name="_honey" style={{ display: 'none' }} />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
@@ -264,6 +281,12 @@ const BookCall: React.FC = () => {
                 className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-none"
                 ></textarea>
             </div>
+
+            {status === 'error' && (
+                <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-200 text-sm">
+                    Something went wrong. Please email me directly at <strong>itskiranbabu.ai@gmail.com</strong>
+                </div>
+            )}
 
             <button
                 type="submit"

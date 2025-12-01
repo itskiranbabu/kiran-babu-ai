@@ -22,6 +22,13 @@ export const NAVIGATION_LINKS = [
   { label: 'Portfolio', path: '/portfolio' },
 ];
 
+// Active Discount Codes
+export const DISCOUNT_CODES: Record<string, number> = {
+  'SAVE20': 0.20, // 20% off
+  'WELCOME': 0.10, // 10% off
+  'PRO50': 0.50,  // 50% off
+};
+
 export const SERVICES: Service[] = [
   {
     id: 's1',
