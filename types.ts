@@ -48,3 +48,13 @@ export interface NavItem {
   path: string;
   external?: boolean;
 }
+
+export interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  status: string;
+  value: string;
+  source: string;
+  createdAt: number;
+}

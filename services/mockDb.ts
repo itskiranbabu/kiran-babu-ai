@@ -1,17 +1,35 @@
 
-import { Product } from '../types';
+import { Lead, Product } from '../types';
 
-// Types
-export interface Lead {
+// Extended Types
+export interface OnboardingData {
+  completed: boolean;
+  type: string;
+  platforms: string[];
+  revenueRange: string;
+  goal: string;
+  plan?: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  date: string; // YYYY-MM-DD
+  title: string;
+  platform: string;
+  status: 'Idea' | 'Scheduled' | 'Published';
+}
+
+export interface Campaign {
   id: string;
   name: string;
-  email: string;
-  status: 'New Lead' | 'Qualified' | 'Proposal Sent' | 'Closed Won';
-  value: string;
-  source: string;
+  summary: string;
+  plan: any; // JSON structure
   createdAt: number;
 }
 
+export { Lead }; 
+// Re-exporting Lead type from previous file if it was defined there, 
+// otherwise defining here for safety based on previous context.
 export interface Funnel {
   id: string;
   name: string;
@@ -26,6 +44,8 @@ export interface AnalyticsData {
   pageViews: number;
   conversions: number;
   revenue: number;
+  aiGenerations: number;
+  campaignsCreated: number;
 }
 
 // Initial Data
@@ -39,11 +59,23 @@ const INITIAL_ANALYTICS: AnalyticsData = {
   pageViews: 4500,
   conversions: 35,
   revenue: 12500,
+  aiGenerations: 12,
+  campaignsCreated: 2
 };
 
 // Database Service
 export const mockDb = {
-  // Leads
+  // --- User / Onboarding ---
+  getOnboarding: (): OnboardingData | null => {
+    const stored = localStorage.getItem('kb_onboarding');
+    return stored ? JSON.parse(stored) : null;
+  },
+  
+  saveOnboarding: (data: OnboardingData) => {
+    localStorage.setItem('kb_onboarding', JSON.stringify(data));
+  },
+
+  // --- Leads ---
   getLeads: (): Lead[] => {
     const stored = localStorage.getItem('kb_leads');
     if (!stored) {
@@ -81,7 +113,7 @@ export const mockDb = {
     localStorage.setItem('kb_leads', JSON.stringify(filtered));
   },
 
-  // Funnels
+  // --- Funnels ---
   getFunnels: (): Funnel[] => {
     const stored = localStorage.getItem('kb_funnels');
     return stored ? JSON.parse(stored) : [];
@@ -99,7 +131,40 @@ export const mockDb = {
     return newFunnel;
   },
 
-  // Analytics
+  // --- Campaigns (Copilot) ---
+  getCampaigns: (): Campaign[] => {
+    const stored = localStorage.getItem('kb_campaigns');
+    return stored ? JSON.parse(stored) : [];
+  },
+
+  addCampaign: (campaign: Omit<Campaign, 'id' | 'createdAt'>): Campaign => {
+    const list = mockDb.getCampaigns();
+    const newItem: Campaign = {
+      ...campaign,
+      id: Math.random().toString(36).substr(2, 9),
+      createdAt: Date.now(),
+    };
+    list.push(newItem);
+    localStorage.setItem('kb_campaigns', JSON.stringify(list));
+    mockDb.logEvent('campaign_created');
+    return newItem;
+  },
+
+  // --- Calendar ---
+  getEvents: (): CalendarEvent[] => {
+    const stored = localStorage.getItem('kb_events');
+    return stored ? JSON.parse(stored) : [];
+  },
+
+  addEvent: (evt: Omit<CalendarEvent, 'id'>): CalendarEvent => {
+    const list = mockDb.getEvents();
+    const newItem = { ...evt, id: Math.random().toString(36).substr(2, 9) };
+    list.push(newItem);
+    localStorage.setItem('kb_events', JSON.stringify(list));
+    return newItem;
+  },
+
+  // --- Analytics & Logging ---
   getAnalytics: (): AnalyticsData => {
     const stored = localStorage.getItem('kb_analytics');
     if (!stored) {
@@ -107,5 +172,26 @@ export const mockDb = {
       return INITIAL_ANALYTICS;
     }
     return JSON.parse(stored);
+  },
+
+  logEvent: (type: 'generation' | 'campaign_created' | 'conversion') => {
+    const data = mockDb.getAnalytics();
+    if (type === 'generation') data.aiGenerations += 1;
+    if (type === 'campaign_created') data.campaignsCreated += 1;
+    if (type === 'conversion') data.conversions += 1;
+    localStorage.setItem('kb_analytics', JSON.stringify(data));
+  },
+  
+  // User Stats (Ideas generated)
+  getUserStats: () => {
+    const stored = localStorage.getItem('kb_user_stats');
+    return stored ? JSON.parse(stored) : { ideasGenerated: 0, savedPrompts: 0 };
+  },
+
+  incrementUserStat: (stat: 'ideasGenerated' | 'savedPrompts') => {
+    const stats = mockDb.getUserStats();
+    stats[stat] = (stats[stat] || 0) + 1;
+    localStorage.setItem('kb_user_stats', JSON.stringify(stats));
+    mockDb.logEvent('generation');
   }
 };

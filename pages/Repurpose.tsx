@@ -3,165 +3,230 @@ import React, { useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
-import { UploadCloud, Video, Mic, FileText, Youtube, Linkedin, Instagram, Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Copy, Loader2, Linkedin, Instagram, Twitter, Youtube, RefreshCw, Wand2 } from 'lucide-react';
+import { repurposeContent, refineContent } from '../services/geminiService';
+import { useToast } from '../components/ToastContext';
+import { mockDb } from '../services/mockDb';
 
 const Repurpose: React.FC = () => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [activeStep, setActiveStep] = useState(1);
+  const [inputText, setInputText] = useState('');
+  const [tone, setTone] = useState('Professional & Engaging');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [output, setOutput] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('linkedin');
+  const { addToast } = useToast();
+  
+  // Magic Rewrite State
+  const [isRefining, setIsRefining] = useState(false);
 
-  const handleUpload = () => {
-    setIsUploading(true);
-    // Simulate upload
-    setTimeout(() => {
-        setIsUploading(false);
-        setActiveStep(2);
-    }, 2000);
+  const handleGenerate = async () => {
+    if (!inputText) return;
+    setIsGenerating(true);
+    setOutput(null); // Clear previous
+    const result = await repurposeContent(inputText, tone);
+    if (result) {
+        setOutput(result);
+        mockDb.incrementUserStat('ideasGenerated');
+    }
+    setIsGenerating(false);
   };
 
-  const handleGenerate = () => {
-    setIsProcessing(true);
-    // Simulate AI processing
-    setTimeout(() => {
-        setIsProcessing(false);
-        setActiveStep(3);
-    }, 3000);
+  const copyToClipboard = (text: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    addToast('Content copied to clipboard!');
+  };
+
+  const handleMagicRewrite = async (instruction: string) => {
+    if (!output) return;
+    setIsRefining(true);
+    
+    let currentContent = '';
+    // Determine content based on tab
+    if (activeTab === 'linkedin') currentContent = output.linkedin;
+    else if (activeTab === 'instagram') currentContent = output.instagram;
+    else if (activeTab === 'twitter') currentContent = Array.isArray(output.twitter) ? output.twitter.join('\n\n') : output.twitter;
+    else if (activeTab === 'youtube') currentContent = output.youtube.description;
+
+    if (currentContent) {
+        const refined = await refineContent(currentContent, activeTab, instruction);
+        
+        // Update local state based on active tab
+        const newOutput = { ...output };
+        if (activeTab === 'linkedin') newOutput.linkedin = refined;
+        else if (activeTab === 'instagram') newOutput.instagram = refined;
+        else if (activeTab === 'twitter') newOutput.twitter = refined.split('\n\n'); // Simple split for thread
+        else if (activeTab === 'youtube') newOutput.youtube.description = refined;
+        
+        setOutput(newOutput);
+        addToast('Content refined!');
+    }
+    setIsRefining(false);
   };
 
   return (
-    <div className="pt-16 pb-20 px-4 max-w-5xl mx-auto min-h-screen">
-      <SEO title="AI Content Repurposer" description="Turn one video into 10+ pieces of content." />
-      
+    <div className="pt-16 pb-20 px-4 max-w-7xl mx-auto min-h-screen">
+      <SEO title="Content Repurposer" />
       <FadeIn>
+        <div className="flex items-center gap-3 mb-2">
+            <span className="text-xs font-bold text-brand-400 uppercase tracking-wider bg-brand-900/20 px-2 py-1 rounded border border-brand-500/20">Suite · Repurposer</span>
+        </div>
         <SectionHeader 
-            title="AI Content Repurposer" 
-            subtitle="Upload a video or audio file. Get transcripts, blog posts, social hooks, and more."
-            center
+            title="AI Content Engine" 
+            subtitle="Turn one piece of content into a multi-platform campaign instantly." 
         />
       </FadeIn>
 
-      <div className="mt-12">
-        {/* Steps Indicator */}
-        <div className="flex justify-center mb-12">
-            <div className="flex items-center gap-4 text-sm font-medium">
-                <span className={`px-3 py-1 rounded-full ${activeStep >= 1 ? 'bg-brand-600 text-white' : 'bg-dark-card text-dark-muted'}`}>1. Upload</span>
-                <div className="w-8 h-px bg-dark-border"></div>
-                <span className={`px-3 py-1 rounded-full ${activeStep >= 2 ? 'bg-brand-600 text-white' : 'bg-dark-card text-dark-muted'}`}>2. Configure</span>
-                <div className="w-8 h-px bg-dark-border"></div>
-                <span className={`px-3 py-1 rounded-full ${activeStep >= 3 ? 'bg-brand-600 text-white' : 'bg-dark-card text-dark-muted'}`}>3. Results</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+        {/* Input Column */}
+        <div className="flex flex-col gap-4 h-full">
+            <div className="bg-dark-card border border-dark-border rounded-xl p-6 flex-grow flex flex-col">
+                <label className="text-white font-bold mb-3 flex justify-between">
+                    <span>Source Content</span>
+                    <span className="text-xs font-normal text-gray-500">{inputText.length} chars</span>
+                </label>
+                <textarea 
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Paste your blog post, video transcript, or rough notes here..."
+                    className="flex-grow w-full bg-dark-bg border border-dark-border rounded-lg p-4 text-white resize-none focus:outline-none focus:border-brand-500 min-h-[300px]"
+                />
+                
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                     <div>
+                        <label className="block text-xs text-gray-400 mb-1">Tone of Voice</label>
+                        <select 
+                            value={tone}
+                            onChange={(e) => setTone(e.target.value)}
+                            className="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-white text-sm"
+                        >
+                            <option>Professional & Engaging</option>
+                            <option>Casual & Fun</option>
+                            <option>Bold & Controversial</option>
+                            <option>Storytelling</option>
+                        </select>
+                     </div>
+                     <div className="flex items-end">
+                        <button 
+                            onClick={handleGenerate}
+                            disabled={isGenerating || !inputText}
+                            className="w-full py-2 bg-gradient-to-r from-brand-500 to-orange-500 text-white font-bold rounded-lg flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50"
+                        >
+                            {isGenerating ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />} 
+                            Repurpose All
+                        </button>
+                     </div>
+                </div>
             </div>
         </div>
 
-        {/* Step 1: Upload */}
-        {activeStep === 1 && (
-             <FadeIn>
-                <div 
-                    onClick={handleUpload}
-                    className="border-2 border-dashed border-dark-border bg-dark-card/30 rounded-2xl p-12 text-center cursor-pointer hover:border-brand-500 hover:bg-dark-card/50 transition-all group"
-                >
-                    <div className="w-16 h-16 bg-dark-bg rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        {isUploading ? <Loader2 className="animate-spin text-brand-500" /> : <UploadCloud size={32} className="text-brand-500" />}
-                    </div>
-                    <h3 className="text-xl font-bold text-dark-text mb-2">Click to upload media</h3>
-                    <p className="text-dark-muted mb-6">Supports .mp4, .mov, .mp3 (Max 500MB)</p>
-                    <div className="flex justify-center gap-4 text-xs text-dark-muted">
-                        <span className="flex items-center gap-1"><Video size={14} /> Video</span>
-                        <span className="flex items-center gap-1"><Mic size={14} /> Audio</span>
-                    </div>
+        {/* Output Column */}
+        <div>
+            {!output ? (
+                <div className="h-full min-h-[400px] bg-dark-card/50 border border-dark-border border-dashed rounded-xl flex items-center justify-center text-gray-500 flex-col gap-4">
+                    {isGenerating ? (
+                        <>
+                            <Loader2 size={48} className="animate-spin text-brand-500" />
+                            <p className="animate-pulse">Analyzing content & generating drafts...</p>
+                        </>
+                    ) : (
+                        <>
+                            <RefreshCw size={48} className="opacity-20" />
+                            <p>Paste content and click Generate to see magic.</p>
+                        </>
+                    )}
                 </div>
-            </FadeIn>
-        )}
-
-        {/* Step 2: Configuration */}
-        {activeStep === 2 && (
-            <FadeIn>
-                <div className="bg-dark-card border border-dark-border rounded-2xl p-8">
-                    <div className="flex items-center gap-4 mb-8 p-4 bg-dark-bg rounded-lg border border-dark-border">
-                        <div className="w-12 h-12 bg-red-500/20 text-red-500 rounded flex items-center justify-center">
-                            <Video size={24} />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-dark-text">my_podcast_episode_1.mp4</h4>
-                            <p className="text-xs text-dark-muted">Uploaded • 145 MB</p>
-                        </div>
+            ) : (
+                <div className="bg-dark-card border border-dark-border rounded-xl overflow-hidden flex flex-col h-full min-h-[500px]">
+                    {/* Tabs */}
+                    <div className="flex border-b border-dark-border overflow-x-auto">
+                        <button onClick={() => setActiveTab('linkedin')} className={`px-4 py-3 text-sm font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'linkedin' ? 'bg-brand-900/20 text-brand-400 border-b-2 border-brand-500' : 'text-gray-400 hover:text-white'}`}>
+                            <Linkedin size={16} /> LinkedIn
+                        </button>
+                        <button onClick={() => setActiveTab('instagram')} className={`px-4 py-3 text-sm font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'instagram' ? 'bg-brand-900/20 text-brand-400 border-b-2 border-brand-500' : 'text-gray-400 hover:text-white'}`}>
+                            <Instagram size={16} /> Reels
+                        </button>
+                        <button onClick={() => setActiveTab('twitter')} className={`px-4 py-3 text-sm font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'twitter' ? 'bg-brand-900/20 text-brand-400 border-b-2 border-brand-500' : 'text-gray-400 hover:text-white'}`}>
+                            <Twitter size={16} /> X Thread
+                        </button>
+                        <button onClick={() => setActiveTab('youtube')} className={`px-4 py-3 text-sm font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'youtube' ? 'bg-brand-900/20 text-brand-400 border-b-2 border-brand-500' : 'text-gray-400 hover:text-white'}`}>
+                            <Youtube size={16} /> YouTube
+                        </button>
                     </div>
 
-                    <h3 className="text-lg font-bold text-dark-text mb-4">Select Outputs</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                        {['YouTube Description', 'LinkedIn Post', 'Twitter Thread', 'Instagram Caption', 'Blog Post', 'Newsletter'].map((item) => (
-                            <label key={item} className="flex items-center gap-3 p-4 border border-dark-border rounded-lg hover:bg-dark-bg cursor-pointer transition-colors">
-                                <input type="checkbox" defaultChecked className="w-4 h-4 rounded border-gray-600 text-brand-600 focus:ring-brand-500 bg-dark-bg" />
-                                <span className="text-dark-text">{item}</span>
-                            </label>
-                        ))}
-                    </div>
+                    {/* Content */}
+                    <div className="p-6 flex-grow bg-dark-bg/50 overflow-y-auto max-h-[600px] relative">
+                         {isRefining && (
+                             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex items-center justify-center">
+                                 <div className="bg-dark-card border border-dark-border p-4 rounded-lg flex items-center gap-3">
+                                     <Wand2 className="animate-spin text-brand-400" size={20} />
+                                     <span className="text-white font-medium">Refining magic...</span>
+                                 </div>
+                             </div>
+                         )}
 
-                    <button 
-                        onClick={handleGenerate}
-                        disabled={isProcessing}
-                        className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
-                    >
-                        {isProcessing ? (
-                            <><Loader2 className="animate-spin" /> Analyzing Content...</>
-                        ) : (
-                            <><Sparkles /> Generate Assets</>
+                        {activeTab === 'linkedin' && (
+                            <div className="prose prose-invert prose-sm max-w-none">
+                                <div className="whitespace-pre-line text-gray-200">{output.linkedin}</div>
+                                <button onClick={() => copyToClipboard(output.linkedin)} className="mt-4 flex items-center gap-2 text-xs text-brand-400 font-bold uppercase hover:underline"><Copy size={12} /> Copy Post</button>
+                            </div>
                         )}
-                    </button>
-                </div>
-            </FadeIn>
-        )}
-
-        {/* Step 3: Results (Mock) */}
-        {activeStep === 3 && (
-            <div className="space-y-6">
-                <FadeIn delay={0}>
-                    <div className="bg-dark-card border border-dark-border rounded-xl p-6">
-                        <div className="flex items-center gap-2 mb-4 text-blue-400 font-bold">
-                            <Linkedin size={20} /> LinkedIn Post
-                        </div>
-                        <div className="bg-dark-bg p-4 rounded-lg text-dark-text text-sm leading-relaxed whitespace-pre-line border border-dark-border">
-                            🚀 Just recorded a new video on AI workflows.<br/><br/>
-                            Here are the 3 key takeaways:<br/>
-                            1. Automation isn't about replacing humans, it's about leverage.<br/>
-                            2. The best prompts are iterative.<br/>
-                            3. Start small, scale fast.<br/><br/>
-                            Full video link in comments! 👇 #AI #Productivity #Creator
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                            <button className="text-sm font-medium text-brand-500 hover:text-brand-400">Copy to Clipboard</button>
-                        </div>
+                        {activeTab === 'instagram' && (
+                            <div className="prose prose-invert prose-sm max-w-none">
+                                <div className="whitespace-pre-line text-gray-200">{output.instagram}</div>
+                                <button onClick={() => copyToClipboard(output.instagram)} className="mt-4 flex items-center gap-2 text-xs text-brand-400 font-bold uppercase hover:underline"><Copy size={12} /> Copy Script</button>
+                            </div>
+                        )}
+                        {activeTab === 'twitter' && (
+                            <div className="space-y-4">
+                                {Array.isArray(output.twitter) ? output.twitter.map((tweet: string, i: number) => (
+                                    <div key={i} className="p-3 bg-dark-card border border-dark-border rounded-lg">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-xs text-gray-500">{i + 1}/{output.twitter.length}</span>
+                                            <button onClick={() => copyToClipboard(tweet)}><Copy size={12} className="text-gray-500 hover:text-white" /></button>
+                                        </div>
+                                        <p className="text-sm text-gray-200">{tweet}</p>
+                                    </div>
+                                )) : <p className="text-gray-200 whitespace-pre-line">{output.twitter}</p>}
+                            </div>
+                        )}
+                        {activeTab === 'youtube' && output.youtube && (
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase">Title</span>
+                                    <p className="font-bold text-white text-lg">{output.youtube.title}</p>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase">Description</span>
+                                    <div className="whitespace-pre-line text-sm text-gray-300 mt-1">{output.youtube.description}</div>
+                                </div>
+                                <div>
+                                    <span className="text-xs font-bold text-gray-500 uppercase">Tags</span>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {output.youtube.tags?.split(',').map((t: string, i: number) => (
+                                            <span key={i} className="px-2 py-1 bg-brand-900/20 text-brand-300 rounded text-xs border border-brand-500/20">{t.trim()}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </FadeIn>
-
-                <FadeIn delay={100}>
-                    <div className="bg-dark-card border border-dark-border rounded-xl p-6">
-                        <div className="flex items-center gap-2 mb-4 text-red-500 font-bold">
-                            <Youtube size={20} /> YouTube Description
-                        </div>
-                        <div className="bg-dark-bg p-4 rounded-lg text-dark-text text-sm leading-relaxed whitespace-pre-line border border-dark-border">
-                            In this video, I break down exactly how I built my "Second Brain" in Notion.<br/><br/>
-                            TIMESTAMPS:<br/>
-                            0:00 - Intro<br/>
-                            1:45 - The PARA Method<br/>
-                            5:30 - Setting up the dashboard<br/><br/>
-                            Get the template here: https://kiranbabu.ai/store
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                            <button className="text-sm font-medium text-brand-500 hover:text-brand-400">Copy to Clipboard</button>
-                        </div>
+                    
+                    {/* Magic Actions */}
+                    <div className="p-4 bg-dark-card border-t border-dark-border flex gap-2 overflow-x-auto">
+                        <button onClick={() => handleMagicRewrite("Make it shorter and punchier")} className="flex items-center gap-2 px-3 py-1.5 bg-dark-bg border border-dark-border rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:border-brand-500 whitespace-nowrap">
+                            <Wand2 size={12} /> Make Shorter
+                        </button>
+                         <button onClick={() => handleMagicRewrite("Make it more professional")} className="flex items-center gap-2 px-3 py-1.5 bg-dark-bg border border-dark-border rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:border-brand-500 whitespace-nowrap">
+                            <Wand2 size={12} /> More Professional
+                        </button>
+                         <button onClick={() => handleMagicRewrite("Add more emojis and excitement")} className="flex items-center gap-2 px-3 py-1.5 bg-dark-bg border border-dark-border rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:border-brand-500 whitespace-nowrap">
+                            <Wand2 size={12} /> Add Excitement
+                        </button>
                     </div>
-                </FadeIn>
-                
-                <div className="text-center pt-8">
-                     <button 
-                        onClick={() => setActiveStep(1)}
-                        className="text-dark-muted hover:text-dark-text text-sm font-medium"
-                     >
-                        Start Over
-                     </button>
                 </div>
-            </div>
-        )}
+            )}
+        </div>
       </div>
     </div>
   );

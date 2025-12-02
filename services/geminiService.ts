@@ -1,92 +1,216 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini Client
-// In a real production app, ensure this key is guarded by a backend proxy if strict security is needed,
-// or use allow-lists for domains in the Google AI Studio console.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
-export interface PromptResult {
-  ideas: string[];
-}
+const MODEL_NAME = 'gemini-2.5-flash';
 
-export const generateContentIdeas = async (
-  niche: string,
-  platform: string,
-  topic: string
-): Promise<string[]> => {
+// --- Helper to parse JSON from AI response ---
+const cleanAndParseJSON = (text: string) => {
   try {
-    if (!process.env.API_KEY) {
-      // Return mock data if no key is present to prevent app crash during demo
-      console.warn("No API Key found. Returning mock data.");
-      return [
-        `Mock Idea 1 for ${niche}: 5 Mistakes people make with ${topic}.`,
-        `Mock Idea 2 for ${niche}: How I mastered ${topic} in 30 days.`,
-        `Mock Idea 3 for ${niche}: The secret tool for ${topic} nobody talks about.`
-      ];
+    if (!text) return null;
+    
+    // Remove markdown code blocks (```json ... ``` or just ``` ... ```)
+    let clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    // Robust extraction: Find the first '{' and last '}' to strip any conversational text
+    const firstOpen = clean.indexOf('{');
+    const lastClose = clean.lastIndexOf('}');
+    
+    if (firstOpen !== -1 && lastClose !== -1) {
+      clean = clean.substring(firstOpen, lastClose + 1);
     }
 
-    const model = 'gemini-2.5-flash';
-    const prompt = `
-      Act as an expert social media strategist and copywriter.
-      Target Audience Niche: ${niche}
-      Platform: ${platform}
-      Topic: ${topic}
-
-      Generate 3 distinct, high-viral potential content hooks or ideas for this specific scenario.
-      Keep them punchy, concise, and ready to use.
-      Return the response as a simple JSON array of strings. Do not use Markdown formatting for the JSON.
-    `;
-
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-
-    const text = response.text;
-    if (!text) return [];
-
-    const parsed = JSON.parse(text);
-    if (Array.isArray(parsed)) {
-      return parsed;
-    } 
-    // Handle case where it might be wrapped in an object like { ideas: [] }
-    if (parsed.ideas && Array.isArray(parsed.ideas)) {
-      return parsed.ideas;
-    }
-
-    return [text];
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return ["Error generating ideas. Please check your API key or try again later."];
+    return JSON.parse(clean);
+  } catch (e) {
+    console.error("JSON Parse Error", e);
+    // Return null so the UI can handle the error state gracefully
+    return null;
   }
 };
 
-// --- Chat Bot Integration ---
-
-// Mock Chat class for demo purposes when API key is missing
-class MockChat {
-  async sendMessage(props: { message: string }) {
-    await new Promise(r => setTimeout(r, 1000));
+// --- Content Repurposing ---
+export const repurposeContent = async (text: string, tone: string) => {
+  if (!process.env.API_KEY) {
+    // Robust Mock Data
     return {
-      text: `[DEMO MODE] I received your message: "${props.message}". Since no API key is configured, I cannot generate a real AI response. In production, I would answer using Gemini 1.5 Pro.`
+      instagram: "🔥 STOP SCROLLING! Here is how to automate your content...\n\n1. Use Templates\n2. Batch Create\n3. Use AI\n\nLink in bio for my system! #contenttips #automation #creator",
+      linkedin: "Automation isn't about laziness. It's about leverage.\n\n• Save 10 hours/week\n• Focus on strategy\n• Scale without burnout\n\nWhat are you automating today?",
+      twitter: ["Content creation is broken.", "Most creators spend 80% time editing and 20% creating.", "Here is how to flip that ratio...", "Use AI to draft, human to polish.", "That is the KeySpark way."],
+      youtube: { title: "How to Automate Content (Step by Step)", description: "In this video I break down my entire content OS...", tags: "content automation, AI tools, creator economy" }
     };
   }
-}
 
-export const createChatSession = () => {
+  const prompt = `
+    Act as a professional social media manager.
+    Source Text: "${text}"
+    Tone: ${tone}
+
+    Repurpose this content into 4 formats. Return ONLY a valid JSON object with these keys:
+    {
+      "instagram": "Reel script (max 30s) + Caption + 10 hashtags",
+      "linkedin": "A professional, value-driven post with bullet points",
+      "twitter": ["Thread Tweet 1", "Thread Tweet 2", "Thread Tweet 3", "Thread Tweet 4", "Thread Tweet 5"],
+      "youtube": {
+         "title": "Viral Clickable Title",
+         "description": "SEO optimized description",
+         "tags": "comma separated tags"
+      }
+    }
+  `;
+
+  try {
+      const response = await ai.models.generateContent({
+        model: MODEL_NAME,
+        contents: prompt,
+        config: { responseMimeType: "application/json" }
+      });
+      return cleanAndParseJSON(response.text || '{}');
+  } catch (e) {
+      console.error("Repurpose Error", e);
+      return null;
+  }
+};
+
+// --- Magic Rewrite / Refine ---
+export const refineContent = async (text: string, platform: string, instruction: string) => {
+    if (!process.env.API_KEY) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
+
+    const prompt = `
+        Refine the following ${platform} content.
+        Instruction: ${instruction}
+        Original Content: "${text}"
+        
+        Return ONLY the rewritten content text. No explanations.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: MODEL_NAME,
+            contents: prompt,
+        });
+        return response.text?.trim() || text;
+    } catch (e) {
+        return text;
+    }
+};
+
+// --- Campaign Copilot ---
+export const generateCampaign = async (goal: string) => {
   if (!process.env.API_KEY) {
-    console.warn("No API Key found. Using Mock Chat for Chatbot.");
-    return new MockChat();
+    return {
+      campaign_summary: "Launch a comprehensive 7-day sprint focusing on value-first education followed by a scarcity offer.",
+      target_audience: "Creators and Solopreneurs earning $0-$5k/mo",
+      daily_plan: [
+        { day: 1, theme: "The Problem", action_items: ["Post IG Reel about the struggle", "Send teaser email"], platforms: ["IG", "Email"] },
+        { day: 2, theme: "The Solution", action_items: ["Showcase the product in action", "Twitter thread breakdown"], platforms: ["Twitter", "IG"] },
+        { day: 3, theme: "Social Proof", action_items: ["Share client wins", "Go live for Q&A"], platforms: ["LinkedIn", "IG Live"] }
+      ]
+    };
   }
 
-  // Using the requested model gemini-3-pro-preview
-  return ai.chats.create({
-    model: 'gemini-3-pro-preview',
-    config: {
-      systemInstruction: "You are a helpful, professional, and friendly AI assistant for Kiran Babu's personal brand website. You are knowledgeable about his services (Custom Websites, Notion Operating Systems, AI Automation Pipelines, Cinematic AI Content) and his digital products (Notion Templates, Prompt Packs). Your goal is to assist visitors, answer questions about services, and guide them to the 'Work With Me' page or the 'Store' if relevant. Keep answers concise and strictly relevant to Kiran Babu's brand.",
-    },
-  });
+  const prompt = `
+    Act as a launch strategist.
+    Goal: "${goal}"
+
+    Create a 7-day launch campaign. Return ONLY a valid JSON object:
+    {
+      "campaign_summary": "2-3 sentence strategic overview",
+      "target_audience": "Description of who this targets",
+      "daily_plan": [
+        { "day": 1, "theme": "Topic/Angle", "action_items": ["Action 1", "Action 2"], "platforms": ["IG", "Email"] },
+        ... (up to day 7)
+      ]
+    }
+  `;
+
+  try {
+      const response = await ai.models.generateContent({
+        model: MODEL_NAME,
+        contents: prompt,
+        config: { responseMimeType: "application/json" }
+      });
+      return cleanAndParseJSON(response.text || '{}');
+  } catch (e) {
+      console.error("Campaign Gen Error", e);
+      return null;
+  }
 };
+
+// --- Lead Insight ---
+export const analyzeLead = async (leadData: any) => {
+  if (!process.env.API_KEY) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
+
+  const prompt = `
+    Analyze this lead for a creator agency:
+    Name: ${leadData.name}
+    Source: ${leadData.source}
+    Budget: ${leadData.value}
+    
+    Provide 2 brief insights on how to close them and a suggested "Next Step". 
+    Keep it under 50 words.
+  `;
+
+  try {
+      const response = await ai.models.generateContent({
+        model: MODEL_NAME,
+        contents: prompt,
+      });
+      return response.text;
+  } catch (e) {
+      return "Analysis unavailable.";
+  }
+};
+
+// --- Onboarding Plan ---
+export const generateOnboardingPlan = async (data: any) => {
+  if (!process.env.API_KEY) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
+  
+  const prompt = `
+    Create a high-level 90-day growth plan for a ${data.type} creator.
+    Goal: ${data.goal}
+    Current Revenue: ${data.revenueRange}
+    
+    Return a short, motivating 3-step roadmap (Phase 1, 2, 3). Plain text, max 100 words.
+  `;
+
+  try {
+      const response = await ai.models.generateContent({
+        model: MODEL_NAME,
+        contents: prompt,
+      });
+      return response.text;
+  } catch (e) {
+      return "Could not generate plan.";
+  }
+};
+
+
+// --- Existing Logic Preserved ---
+export const generateContentIdeas = async (niche: string, platform: string, topic: string) => {
+    if (!process.env.API_KEY) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
+    const prompt = `Generate 3 viral hooks for ${niche} on ${platform} about ${topic}. JSON array of strings.`;
+    
+    try {
+        const response = await ai.models.generateContent({
+            model: MODEL_NAME, contents: prompt, config: { responseMimeType: "application/json" }
+        });
+        return cleanAndParseJSON(response.text || '[]');
+    } catch(e) {
+        return [];
+    }
+};
+
+export const createChatSession = () => {
+    if (!process.env.API_KEY) return new MockChat();
+    return ai.chats.create({
+        model: 'gemini-3-pro-preview',
+        config: { systemInstruction: "You are KeySpark AI assistant." },
+    });
+};
+
+class MockChat {
+  async sendMessage(props: { message: string }) {
+    return { text: "[Demo Mode] I can't connect to Gemini right now, but I can tell you about our services! Check out the Services page." };
+  }
+}

@@ -24,6 +24,9 @@ export const NAVIGATION_LINKS = [
 
 export const SAAS_LINKS = [
     { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Repurposer', path: '/repurpose' },
+    { label: 'Copilot', path: '/copilot' },
+    { label: 'Calendar', path: '/calendar' },
     { label: 'CRM', path: '/crm' },
     { label: 'Analytics', path: '/analytics' },
     { label: 'Funnels', path: '/funnels' },

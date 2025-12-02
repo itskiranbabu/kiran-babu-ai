@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Services from './pages/Services';
@@ -22,13 +22,17 @@ import Login from './pages/Login';
 
 // SaaS Features
 import CRM from './pages/CRM';
-import Repurpose from './pages/Repurpose';
 import Analytics from './pages/Analytics';
 import Funnels from './pages/Funnels';
 import Referral from './pages/Referral';
 import ClientPortal from './pages/ClientPortal';
 import AIAvatar from './pages/AIAvatar';
 import Templates from './pages/Templates';
+// NEW FEATURES
+import Repurpose from './pages/Repurpose';
+import Copilot from './pages/Copilot';
+import Calendar from './pages/Calendar';
+import Onboarding from './pages/Onboarding';
 
 const App: React.FC = () => {
   return (
@@ -49,9 +53,12 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 
                 {/* Protected SaaS Features */}
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
                 <Route path="/repurpose" element={<ProtectedRoute><Repurpose /></ProtectedRoute>} />
+                <Route path="/copilot" element={<ProtectedRoute><Copilot /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/funnels" element={<ProtectedRoute><Funnels /></ProtectedRoute>} />
                 <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
