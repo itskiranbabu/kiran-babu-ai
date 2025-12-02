@@ -11,8 +11,8 @@ import {
 } from 'lucide-react';
 import { Brand, ProductType, Service, Product, CaseStudy } from './types';
 
-export const APP_NAME = "Kiran Babu";
-export const APP_TAGLINE = "AI Creator, Prompt Engineer & Systems Builder";
+export const APP_NAME = "KeySpark AI";
+export const APP_TAGLINE = "The Creator OS — by Kiran Babu";
 
 export const NAVIGATION_LINKS = [
   { label: 'Home', path: '/' },
@@ -20,9 +20,14 @@ export const NAVIGATION_LINKS = [
   { label: 'Store', path: '/products' },
   { label: 'Playground', path: '/playground' },
   { label: 'Portfolio', path: '/portfolio' },
-  // Adding new links for the expanded OS features
-  { label: 'CRM', path: '/crm' },
-  { label: 'AI Repurpose', path: '/repurpose' },
+];
+
+export const SAAS_LINKS = [
+    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'CRM', path: '/crm' },
+    { label: 'Analytics', path: '/analytics' },
+    { label: 'Funnels', path: '/funnels' },
+    { label: 'Templates', path: '/templates' },
 ];
 
 // Active Discount Codes
@@ -236,7 +241,7 @@ export const TESTIMONIALS = [
     id: 't1',
     name: 'Alex Rivera',
     role: 'Digital Creator',
-    text: "Kiran's Notion system completely saved my sanity. I went from scattered notes to a fully automated content machine. Worth every penny.",
+    text: "KeySpark AI's Notion system completely saved my sanity. I went from scattered notes to a fully automated content machine. Worth every penny.",
     avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d'
   },
   {

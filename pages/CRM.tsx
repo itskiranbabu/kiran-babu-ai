@@ -1,34 +1,65 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
-import { Plus, MoreHorizontal, User, Phone, Mail, DollarSign } from 'lucide-react';
-
-// Mock Data for CRM
-const INITIAL_LEADS = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', status: 'New Lead', value: '$2,500', source: 'Website' },
-  { id: 2, name: 'Alice Smith', email: 'alice@agency.com', status: 'Qualified', value: '$5,000', source: 'LinkedIn' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@startup.io', status: 'Proposal Sent', value: '$8,200', source: 'Referral' },
-  { id: 4, name: 'Emma Wilson', email: 'emma@design.co', status: 'Closed Won', value: '$3,000', source: 'Instagram' },
-];
+import { Plus, MoreHorizontal, Mail, DollarSign, Trash2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { mockDb, Lead } from '../services/mockDb';
+import Modal from '../components/Modal';
 
 const COLUMNS = ['New Lead', 'Qualified', 'Proposal Sent', 'Closed Won'];
 
 const CRM: React.FC = () => {
-  const [leads, setLeads] = useState(INITIAL_LEADS);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // New Lead Form State
+  const [newLead, setNewLead] = useState({ name: '', email: '', value: '', source: 'Manual' });
+
+  useEffect(() => {
+    setLeads(mockDb.getLeads());
+  }, []);
+
+  const handleAddLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    const lead = mockDb.addLead({ ...newLead, status: 'New Lead' });
+    setLeads([...leads, lead]);
+    setIsModalOpen(false);
+    setNewLead({ name: '', email: '', value: '', source: 'Manual' });
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('Are you sure you want to delete this lead?')) {
+        mockDb.deleteLead(id);
+        setLeads(leads.filter(l => l.id !== id));
+    }
+  };
+
+  const moveLead = (id: string, currentStatus: string, direction: 'next' | 'prev') => {
+    const currentIndex = COLUMNS.indexOf(currentStatus);
+    const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+    
+    if (newIndex >= 0 && newIndex < COLUMNS.length) {
+        const newStatus = COLUMNS[newIndex] as any;
+        mockDb.updateLead(id, { status: newStatus });
+        setLeads(leads.map(l => l.id === id ? { ...l, status: newStatus } : l));
+    }
+  };
 
   return (
     <div className="pt-16 pb-20 px-4 max-w-7xl mx-auto min-h-screen">
       <SEO title="CRM Dashboard" description="Manage your leads and sales pipeline." />
       
       <FadeIn>
-        <div className="flex justify-between items-end mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
             <SectionHeader 
                 title="CRM & Pipeline" 
                 subtitle="Track your leads, manage client relationships, and close more deals."
             />
-            <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors mb-12">
+            <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors mb-12 shadow-lg shadow-brand-600/20"
+            >
                 <Plus size={18} /> Add Lead
             </button>
         </div>
@@ -57,12 +88,14 @@ const CRM: React.FC = () => {
               {/* Cards Container */}
               <div className="p-3 space-y-3 flex-grow">
                 {leads.filter(l => l.status === column).map(lead => (
-                    <div key={lead.id} className="bg-dark-bg border border-dark-border p-4 rounded-lg shadow-sm hover:border-brand-500/30 transition-colors cursor-pointer group">
+                    <div key={lead.id} className="bg-dark-bg border border-dark-border p-4 rounded-lg shadow-sm hover:border-brand-500/30 transition-colors group relative">
                         <div className="flex justify-between items-start mb-2">
                             <h4 className="font-bold text-dark-text text-sm">{lead.name}</h4>
-                            <button className="text-dark-muted hover:text-dark-text opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreHorizontal size={14} />
-                            </button>
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => handleDelete(lead.id)} className="text-red-400 hover:text-red-300 p-1">
+                                    <Trash2 size={12} />
+                                </button>
+                            </div>
                         </div>
                         
                         <div className="space-y-1.5 mb-3">
@@ -78,21 +111,84 @@ const CRM: React.FC = () => {
                              <span className="text-[10px] uppercase font-bold text-brand-400 tracking-wider">
                                 {lead.source}
                              </span>
-                             <div className="w-6 h-6 rounded-full bg-brand-900/20 text-brand-500 flex items-center justify-center text-xs font-bold">
-                                {lead.name.charAt(0)}
+                             <div className="flex gap-1">
+                                {colIndex > 0 && (
+                                    <button onClick={() => moveLead(lead.id, column, 'prev')} className="p-1 hover:bg-white/5 rounded text-gray-500 hover:text-white" title="Move Back">
+                                        <ArrowLeft size={12} />
+                                    </button>
+                                )}
+                                {colIndex < COLUMNS.length - 1 && (
+                                    <button onClick={() => moveLead(lead.id, column, 'next')} className="p-1 hover:bg-white/5 rounded text-gray-500 hover:text-white" title="Move Forward">
+                                        <ArrowRight size={12} />
+                                    </button>
+                                )}
                              </div>
                         </div>
                     </div>
                 ))}
                 
-                <button className="w-full py-2 border border-dashed border-dark-border text-dark-muted text-sm rounded-lg hover:bg-dark-bg hover:text-dark-text transition-colors flex items-center justify-center gap-1">
-                    <Plus size={14} /> Add
-                </button>
+                {leads.filter(l => l.status === column).length === 0 && (
+                    <div className="text-center py-8 text-xs text-dark-muted border border-dashed border-dark-border rounded-lg">
+                        No leads
+                    </div>
+                )}
               </div>
             </div>
           </FadeIn>
         ))}
       </div>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Lead">
+        <form onSubmit={handleAddLead} className="space-y-4">
+            <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Name</label>
+                <input 
+                    required 
+                    value={newLead.name}
+                    onChange={e => setNewLead({...newLead, name: e.target.value})}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="Client Name"
+                />
+            </div>
+            <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Email</label>
+                <input 
+                    required 
+                    type="email"
+                    value={newLead.email}
+                    onChange={e => setNewLead({...newLead, email: e.target.value})}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="client@example.com"
+                />
+            </div>
+            <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Estimated Value</label>
+                <input 
+                    required 
+                    value={newLead.value}
+                    onChange={e => setNewLead({...newLead, value: e.target.value})}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white focus:border-brand-500 focus:outline-none"
+                    placeholder="$1,000"
+                />
+            </div>
+            <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Source</label>
+                <select 
+                    value={newLead.source}
+                    onChange={e => setNewLead({...newLead, source: e.target.value})}
+                    className="w-full bg-dark-bg border border-dark-border rounded px-3 py-2 text-white focus:border-brand-500 focus:outline-none"
+                >
+                    <option value="Manual">Manual Entry</option>
+                    <option value="Website">Website</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="Referral">Referral</option>
+                </select>
+            </div>
+            <button type="submit" className="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded mt-4">
+                Create Lead
+            </button>
+        </form>
+      </Modal>
     </div>
   );
 };

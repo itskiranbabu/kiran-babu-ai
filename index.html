@@ -4,8 +4,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kiran Babu | AI Creator & Systems Architect</title>
-    <meta name="description" content="AI Creator, Prompt Engineer & Systems Builder for Creators and Solo Businesses." />
+    <title>KeySpark AI | The Creator OS</title>
+    <meta name="description" content="KeySpark AI — The Creator OS. Automate, Create, and Scale with AI. Powered by Keyrun & ContentSpark." />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -13,17 +13,21 @@
         theme: {
           extend: {
             colors: {
+              keyspark: {
+                purple: '#7B2FF7',
+                orange: '#FF9D0A',
+              },
               brand: {
-                50: '#f5f3ff',
-                100: '#ede9fe',
-                200: '#ddd6fe',
-                300: '#c4b5fd',
-                400: '#a78bfa',
-                500: '#8b5cf6',
-                600: '#7c3aed',
-                700: '#6d28d9',
-                800: '#5b21b6',
-                900: '#4c1d95',
+                50: '#f3f1ff',
+                100: '#e9e4ff',
+                200: '#d5ccff',
+                300: '#b6a6ff',
+                400: '#9475ff',
+                500: '#7B2FF7', // KeySpark Purple Base
+                600: '#6c1ce6',
+                700: '#5e15c4',
+                800: '#4e139f',
+                900: '#411281',
               },
               // Semantic colors mapped to CSS variables for theming
               dark: {
@@ -50,7 +54,7 @@
         },
       };
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       :root {
         /* Light Mode Defaults */
@@ -77,12 +81,16 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
 
-      /* Allow elements using standard text-white to adapt in light mode if needed, 
-         though most should use text-dark-text now. 
-         We force specific overrides for compatibility with existing code */
-      
-      .dark .text-white-force { color: #fff; }
-      
+      .text-gradient-brand {
+        background: linear-gradient(135deg, #7B2FF7 0%, #FF9D0A 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .bg-gradient-brand {
+        background: linear-gradient(135deg, #7B2FF7 0%, #FF9D0A 100%);
+      }
+
       /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
@@ -111,12 +119,12 @@
         animation: slideIn 0.3s ease-out forwards;
       }
     </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6",

@@ -16,38 +16,60 @@ import ScrollToTop from './components/ScrollToTop';
 import { ToastProvider } from './components/ToastContext';
 import CookieConsent from './components/CookieConsent';
 import { ThemeProvider } from './components/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './pages/Login';
+
+// SaaS Features
 import CRM from './pages/CRM';
 import Repurpose from './pages/Repurpose';
+import Analytics from './pages/Analytics';
+import Funnels from './pages/Funnels';
+import Referral from './pages/Referral';
+import ClientPortal from './pages/ClientPortal';
+import AIAvatar from './pages/AIAvatar';
+import Templates from './pages/Templates';
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Router>
-          <ScrollToTop />
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/playground" element={<Playground />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/book" element={<BookCall />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              
-              {/* New SaaS Features */}
-              <Route path="/crm" element={<CRM />} />
-              <Route path="/repurpose" element={<Repurpose />} />
-              
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              
-              {/* Catch all route handles 404s */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-          <CookieConsent />
-        </Router>
+        <AuthProvider>
+          <Router>
+            <ScrollToTop />
+            <Layout>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/playground" element={<Playground />} />
+                <Route path="/book" element={<BookCall />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/login" element={<Login />} />
+                
+                {/* Protected SaaS Features */}
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+                <Route path="/repurpose" element={<ProtectedRoute><Repurpose /></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/funnels" element={<ProtectedRoute><Funnels /></ProtectedRoute>} />
+                <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
+                <Route path="/client-portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
+                <Route path="/ai-avatar" element={<ProtectedRoute><AIAvatar /></ProtectedRoute>} />
+                <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
+                
+                {/* Legal */}
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                
+                {/* Catch all */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+            <CookieConsent />
+          </Router>
+        </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
   );

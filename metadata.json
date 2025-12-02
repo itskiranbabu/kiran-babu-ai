@@ -1,5 +1,22 @@
 {
-  "name": "Kiran Babu - AI Creator Hub",
-  "description": "Personal portfolio, service booking, and digital product store for an AI Creator and Systems Builder.",
+  "name": "KeySpark AI - The Creator OS",
+  "short_name": "KeySpark AI",
+  "description": "The Creator OS. Automate. Create. Scale. Powered by Keyrun & ContentSpark.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f11",
+  "theme_color": "#7B2FF7",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/vite.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
   "requestFramePermissions": []
 }

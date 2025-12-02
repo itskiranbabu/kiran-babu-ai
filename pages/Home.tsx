@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, Sparkles, CheckCircle, Quote, Mail, Loader2, MessageCircle, Send } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle, Quote, Mail, Loader2, MessageCircle, Send, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SectionHeader from '../components/SectionHeader';
-import { SERVICES, PRODUCTS, CASE_STUDIES, TESTIMONIALS } from '../constants';
+import { SERVICES, PRODUCTS, CASE_STUDIES, TESTIMONIALS, APP_NAME } from '../constants';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import { useToast } from '../components/ToastContext';
@@ -22,53 +22,55 @@ const Home: React.FC = () => {
     setTimeout(() => {
         setIsSubscribing(false);
         setEmail('');
-        addToast("Welcome to the Inner Circle! 🚀", "success");
+        addToast("Welcome to the KeySpark Inner Circle! 🚀", "success");
     }, 1500);
   };
 
   return (
     <div className="space-y-20 pb-20">
-      <SEO title="Home" description="AI Creator, Prompt Engineer & Systems Builder for Creators and Solo Businesses." />
+      <SEO title="Home" description="KeySpark AI — The Creator OS. Automate. Create. Scale." />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 md:pt-24 pb-16 px-4">
         {/* Abstract Background Element */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-brand-600/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#7B2FF7]/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#FF9D0A]/10 blur-[100px] rounded-full pointer-events-none" />
         
         <div className="relative max-w-7xl mx-auto text-center">
           <FadeIn>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-900/30 border border-brand-500/30 text-brand-300 text-sm font-medium mb-8">
-              <Sparkles size={14} />
+              <Zap size={14} className="fill-brand-300" />
               <span>Powering the Next Generation of Creators</span>
             </div>
           </FadeIn>
           
           <FadeIn delay={100}>
             <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-8">
-              Build Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-indigo-500">Digital Empire</span>
-              <br /> With AI Systems.
+              {APP_NAME} — The <br className="hidden md:block"/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A]">Creator OS.</span>
             </h1>
           </FadeIn>
           
           <FadeIn delay={200}>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              I help creators and solopreneurs build high-converting websites, automate their workflows, and scale their content with AI.
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+              The command center for your digital empire. <br />
+              Unify content, systems, and sales into one high-performance machine.
             </p>
           </FadeIn>
           
           <FadeIn delay={300}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link 
-                to="/book" 
-                className="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2"
+                to="/login" 
+                className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2"
               >
-                Work With Me <ArrowRight size={18} />
+                Start Creating <ArrowRight size={18} />
               </Link>
               <Link 
-                to="/products"
+                to="/book"
                 className="w-full sm:w-auto px-8 py-4 bg-dark-card hover:bg-dark-border border border-dark-border text-white font-semibold rounded-xl transition-all"
               >
-                Shop Templates
+                Book Strategy Call
               </Link>
             </div>
           </FadeIn>
@@ -92,15 +94,17 @@ const Home: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4">
         <FadeIn>
           <SectionHeader 
-            title="How I Can Help You" 
-            subtitle="From building your digital home to automating your daily grind."
+            title="Your Growth Engine" 
+            subtitle="Everything you need to build, automate, and scale your digital empire."
             center
           />
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {SERVICES.map((service, index) => (
             <FadeIn key={service.id} delay={index * 100}>
-              <div className="bg-dark-card border border-dark-border p-6 rounded-2xl hover:border-brand-500/50 transition-colors group h-full">
+              <div className="bg-dark-card border border-dark-border p-6 rounded-2xl hover:border-brand-500/50 transition-colors group h-full relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] opacity-0 group-hover:opacity-100 transition-opacity" />
+                
                 <div className="w-12 h-12 bg-dark-bg rounded-lg border border-dark-border flex items-center justify-center text-brand-400 mb-4 group-hover:scale-110 transition-transform">
                   <service.icon size={24} />
                 </div>
@@ -120,8 +124,8 @@ const Home: React.FC = () => {
         <FadeIn>
           <div className="flex justify-between items-end mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-white mb-2">Digital Products</h2>
-              <p className="text-gray-400">Steal my systems and prompts.</p>
+              <h2 className="text-3xl font-bold text-white mb-2">KeySpark Store</h2>
+              <p className="text-gray-400">Premium templates and systems to fast-track your success.</p>
             </div>
             <Link to="/products" className="hidden md:flex text-brand-400 hover:text-brand-300 items-center gap-2">
               View All <ArrowRight size={16} />
@@ -172,8 +176,8 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4">
             <FadeIn>
                 <SectionHeader 
-                    title="Client Love" 
-                    subtitle="Don't just take my word for it. Here is what others are saying." 
+                    title="Client Success" 
+                    subtitle="Real results from real creators using the KeySpark system." 
                     center 
                 />
             </FadeIn>
@@ -201,7 +205,7 @@ const Home: React.FC = () => {
       {/* Social Proof / Case Studies */}
       <section className="max-w-7xl mx-auto px-4 pt-20">
             <FadeIn>
-               <SectionHeader title="Recent Work" subtitle="Real results for real creators." center />
+               <SectionHeader title="Recent Work" subtitle="A showcase of systems and strategies in action." center />
             </FadeIn>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {CASE_STUDIES.map((cs, index) => (
@@ -242,9 +246,9 @@ const Home: React.FC = () => {
                     <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-6 text-brand-300">
                         <Mail size={24} />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join the Inner Circle</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join KeySpark Insiders</h2>
                     <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto">
-                        Get free prompt packs, automation tips, and system templates delivered to your inbox weekly.
+                        Get free prompt packs, automation blueprints, and system templates delivered to your inbox weekly.
                     </p>
                     
                     <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3 mb-8">
