@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 // Initialize Gemini Client
 // In a real production app, ensure this key is guarded by a backend proxy if strict security is needed,
 // or use allow-lists for domains in the Google AI Studio console.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' }(import.meta.env.VITE_API_KEY || process.env.API_KEY || ''));
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 export interface PromptResult {
   ideas: string[];

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, Sparkles, CheckCircle, Quote, Mail, Loader2 } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle, Quote, Mail, Loader2, MessageCircle, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SectionHeader from '../components/SectionHeader';
 import { SERVICES, PRODUCTS, CASE_STUDIES, TESTIMONIALS } from '../constants';
@@ -247,7 +247,7 @@ const Home: React.FC = () => {
                         Get free prompt packs, automation tips, and system templates delivered to your inbox weekly.
                     </p>
                     
-                    <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+                    <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3 mb-8">
                         <input 
                             type="email" 
                             required
@@ -264,7 +264,28 @@ const Home: React.FC = () => {
                             {isSubscribing ? <Loader2 className="animate-spin" size={18} /> : "Subscribe Free"}
                         </button>
                     </form>
-                    <p className="text-xs text-gray-500 mt-4">No spam. Unsubscribe anytime.</p>
+
+                    <div className="border-t border-white/10 pt-8">
+                        <p className="text-gray-400 text-sm mb-4 font-medium">Or join the community directly:</p>
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <a 
+                              href="https://whatsapp.com/channel/0029VbB6TIKBqbrB5UjadA2m" 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="px-6 py-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/50 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 group"
+                            >
+                                <MessageCircle size={20} className="group-hover:scale-110 transition-transform" /> WhatsApp Channel
+                            </a>
+                            <a 
+                              href="https://t.me/itskiranbabu" 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="px-6 py-3 bg-[#0088cc]/10 hover:bg-[#0088cc]/20 text-[#0088cc] border border-[#0088cc]/50 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 group"
+                            >
+                                <Send size={20} className="group-hover:scale-110 transition-transform -ml-1" /> Telegram Channel
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </FadeIn>
