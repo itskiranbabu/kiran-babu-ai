@@ -34,7 +34,11 @@ export const repurposeContent = async (text: string, tone: string) => {
   if (!process.env.API_KEY) {
     // Robust Mock Data
     return {
-      instagram: "🔥 STOP SCROLLING! Here is how to automate your content...\n\n1. Use Templates\n2. Batch Create\n3. Use AI\n\nLink in bio for my system! #contenttips #automation #creator",
+      instagram: {
+        script: "🔥 STOP SCROLLING! Here is how to automate your content...\n\n1. Use Templates\n2. Batch Create\n3. Use AI",
+        caption: "Automation isn't about laziness. It's about leverage. Save 10 hours/week and focus on strategy.",
+        hashtags: "#contenttips #automation #creator #strategy"
+      },
       linkedin: "Automation isn't about laziness. It's about leverage.\n\n• Save 10 hours/week\n• Focus on strategy\n• Scale without burnout\n\nWhat are you automating today?",
       twitter: ["Content creation is broken.", "Most creators spend 80% time editing and 20% creating.", "Here is how to flip that ratio...", "Use AI to draft, human to polish.", "That is the KeySpark way."],
       youtube: { title: "How to Automate Content (Step by Step)", description: "In this video I break down my entire content OS...", tags: "content automation, AI tools, creator economy" }
@@ -48,7 +52,11 @@ export const repurposeContent = async (text: string, tone: string) => {
 
     Repurpose this content into 4 formats. Return ONLY a valid JSON object with these keys:
     {
-      "instagram": "Reel script (max 30s) + Caption + 10 hashtags",
+      "instagram": {
+        "script": "Reel script (max 30s) with visual cues",
+        "caption": "Engaging caption with call to action",
+        "hashtags": "10 relevant hashtags"
+      },
       "linkedin": "A professional, value-driven post with bullet points",
       "twitter": ["Thread Tweet 1", "Thread Tweet 2", "Thread Tweet 3", "Thread Tweet 4", "Thread Tweet 5"],
       "youtube": {

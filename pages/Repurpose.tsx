@@ -44,7 +44,11 @@ const Repurpose: React.FC = () => {
     let currentContent = '';
     // Determine content based on tab
     if (activeTab === 'linkedin') currentContent = output.linkedin;
-    else if (activeTab === 'instagram') currentContent = output.instagram;
+    else if (activeTab === 'instagram') {
+        // If object, refine just the caption for simplicity, or we could refine the whole object (complex)
+        // For simplicity in this demo, we'll stringify or just refine the caption if it's an object
+        currentContent = typeof output.instagram === 'string' ? output.instagram : output.instagram.caption;
+    }
     else if (activeTab === 'twitter') currentContent = Array.isArray(output.twitter) ? output.twitter.join('\n\n') : output.twitter;
     else if (activeTab === 'youtube') currentContent = output.youtube.description;
 
@@ -54,7 +58,13 @@ const Repurpose: React.FC = () => {
         // Update local state based on active tab
         const newOutput = { ...output };
         if (activeTab === 'linkedin') newOutput.linkedin = refined;
-        else if (activeTab === 'instagram') newOutput.instagram = refined;
+        else if (activeTab === 'instagram') {
+             if (typeof newOutput.instagram === 'string') {
+                 newOutput.instagram = refined;
+             } else {
+                 newOutput.instagram = { ...newOutput.instagram, caption: refined };
+             }
+        }
         else if (activeTab === 'twitter') newOutput.twitter = refined.split('\n\n'); // Simple split for thread
         else if (activeTab === 'youtube') newOutput.youtube.description = refined;
         
@@ -172,9 +182,31 @@ const Repurpose: React.FC = () => {
                             </div>
                         )}
                         {activeTab === 'instagram' && (
-                            <div className="prose prose-invert prose-sm max-w-none">
-                                <div className="whitespace-pre-line text-gray-200">{output.instagram}</div>
-                                <button onClick={() => copyToClipboard(output.instagram)} className="mt-4 flex items-center gap-2 text-xs text-brand-400 font-bold uppercase hover:underline"><Copy size={12} /> Copy Script</button>
+                            <div className="space-y-4">
+                                {typeof output.instagram === 'object' && output.instagram !== null ? (
+                                    <>
+                                        <div className="bg-dark-card border border-dark-border rounded-lg p-4">
+                                            <span className="text-xs font-bold text-gray-500 uppercase mb-2 block">Script</span>
+                                            <div className="whitespace-pre-line text-gray-200 text-sm">{output.instagram.script}</div>
+                                            <button onClick={() => copyToClipboard(output.instagram.script)} className="mt-2 text-brand-400 text-xs flex items-center gap-1 hover:underline"><Copy size={12}/> Copy Script</button>
+                                        </div>
+                                        <div className="bg-dark-card border border-dark-border rounded-lg p-4">
+                                            <span className="text-xs font-bold text-gray-500 uppercase mb-2 block">Caption</span>
+                                            <div className="whitespace-pre-line text-gray-200 text-sm">{output.instagram.caption}</div>
+                                            <button onClick={() => copyToClipboard(output.instagram.caption)} className="mt-2 text-brand-400 text-xs flex items-center gap-1 hover:underline"><Copy size={12}/> Copy Caption</button>
+                                        </div>
+                                         <div className="bg-dark-card border border-dark-border rounded-lg p-4">
+                                            <span className="text-xs font-bold text-gray-500 uppercase mb-2 block">Hashtags</span>
+                                            <div className="text-brand-300 text-sm">{output.instagram.hashtags}</div>
+                                            <button onClick={() => copyToClipboard(output.instagram.hashtags)} className="mt-2 text-brand-400 text-xs flex items-center gap-1 hover:underline"><Copy size={12}/> Copy Tags</button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="prose prose-invert prose-sm max-w-none">
+                                        <div className="whitespace-pre-line text-gray-200">{output.instagram}</div>
+                                        <button onClick={() => copyToClipboard(output.instagram)} className="mt-4 flex items-center gap-2 text-xs text-brand-400 font-bold uppercase hover:underline"><Copy size={12} /> Copy</button>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {activeTab === 'twitter' && (

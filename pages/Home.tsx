@@ -7,11 +7,13 @@ import { SERVICES, PRODUCTS, CASE_STUDIES, TESTIMONIALS, APP_NAME } from '../con
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import { useToast } from '../components/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const { addToast } = useToast();
+  const { user } = useAuth();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +27,8 @@ const Home: React.FC = () => {
         addToast("Welcome to the KeySpark Inner Circle! 🚀", "success");
     }, 1500);
   };
+
+  const startCreatingLink = user ? '/dashboard' : '/onboarding';
 
   return (
     <div className="space-y-20 pb-20">
@@ -53,15 +57,15 @@ const Home: React.FC = () => {
           
           <FadeIn delay={200}>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
-              The command center for your digital empire. <br />
-              Unify content, systems, and sales into one high-performance machine.
+               The command center for your digital empire. <br />
+               Unify content, systems, and sales into one high-performance machine.
             </p>
           </FadeIn>
           
           <FadeIn delay={300}>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link 
-                to="/login" 
+                to={startCreatingLink}
                 className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 text-white font-semibold rounded-xl transition-all shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2"
               >
                 Start Creating <ArrowRight size={18} />

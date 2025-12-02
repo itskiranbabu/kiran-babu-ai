@@ -20,6 +20,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     navigate('/login');
   };
 
+  const getStartCreatingLink = () => {
+    if (user) return "/dashboard";
+    return "/onboarding";
+  };
+
   return (
     <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col transition-colors duration-300">
       {/* Navbar */}
@@ -114,7 +119,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </button>
 
               <Link 
-                to="/book"
+                to={getStartCreatingLink()}
                 className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 rounded-lg transition-opacity shadow-lg shadow-brand-600/20"
               >
                 Start Creating
@@ -207,7 +212,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
               <div className="pt-2 pb-2">
                   <Link 
-                    to="/book"
+                    to={getStartCreatingLink()}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full text-center px-4 py-3 text-white bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 rounded-lg font-bold"
                   >
