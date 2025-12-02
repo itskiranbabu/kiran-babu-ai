@@ -1,4 +1,3 @@
-
 import { 
   Cpu, 
   Layout, 
@@ -24,8 +23,8 @@ export const NAVIGATION_LINKS = [
 
 export const SAAS_LINKS = [
     { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Copilot Suite', path: '/copilot' },
     { label: 'Repurposer', path: '/repurpose' },
-    { label: 'Copilot', path: '/copilot' },
     { label: 'Calendar', path: '/calendar' },
     { label: 'CRM', path: '/crm' },
     { label: 'Analytics', path: '/analytics' },
@@ -266,18 +265,6 @@ export const TESTIMONIALS = [
 export const FAQS = [
   {
     question: "What platforms do you build websites on?",
-    answer: "I primarily specialize in Next.js and React for high-performance, custom web applications. However, I can also build on Framer or Webflow depending on your specific needs and budget."
-  },
-  {
-    question: "Do you offer ongoing support for Notion systems?",
-    answer: "Yes! All custom Notion builds come with a 30-day support window. I also offer a 'System Maintenance' retainer for teams that need regular updates and training."
-  },
-  {
-    question: "How long does a typical project take?",
-    answer: "Notion systems usually take 1-2 weeks. Custom websites range from 2-4 weeks depending on complexity. Automations can often be set up in a few days."
-  },
-  {
-    question: "Do you offer refunds on digital products?",
-    answer: "Due to the digital nature of Notion templates and prompt packs, I cannot offer refunds once the files have been downloaded. However, I'm happy to help you get set up if you have issues."
+    answer: "Next.js and React."
   }
 ];

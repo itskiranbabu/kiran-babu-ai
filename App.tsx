@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Layout from './components/Layout';
+import CopilotLayout from './components/CopilotLayout';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Products from './pages/Products';
@@ -31,6 +31,9 @@ import Templates from './pages/Templates';
 // NEW FEATURES
 import Repurpose from './pages/Repurpose';
 import Copilot from './pages/Copilot';
+import Workflows from './pages/Workflows';
+import WorkflowDetail from './pages/WorkflowDetail';
+import RunViewer from './pages/RunViewer';
 import Calendar from './pages/Calendar';
 import Onboarding from './pages/Onboarding';
 
@@ -41,9 +44,9 @@ const App: React.FC = () => {
         <AuthProvider>
           <Router>
             <ScrollToTop />
-            <Layout>
-              <Routes>
-                {/* Public Routes */}
+            <Routes>
+              {/* Main Site Layout */}
+              <Route element={<Layout><Outlet /></Layout>}>
                 <Route path="/" element={<Home />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/products" element={<Products />} />
@@ -52,12 +55,10 @@ const App: React.FC = () => {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/login" element={<Login />} />
                 
-                {/* Protected SaaS Features */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
                 <Route path="/repurpose" element={<ProtectedRoute><Repurpose /></ProtectedRoute>} />
-                <Route path="/copilot" element={<ProtectedRoute><Copilot /></ProtectedRoute>} />
                 <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/funnels" element={<ProtectedRoute><Funnels /></ProtectedRoute>} />
@@ -66,14 +67,19 @@ const App: React.FC = () => {
                 <Route path="/ai-avatar" element={<ProtectedRoute><AIAvatar /></ProtectedRoute>} />
                 <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
                 
-                {/* Legal */}
+                {/* Copilot Suite with Sub-Layout */}
+                <Route path="/copilot" element={<ProtectedRoute><CopilotLayout /></ProtectedRoute>}>
+                    <Route index element={<Copilot />} />
+                    <Route path="workflows" element={<Workflows />} />
+                    <Route path="workflows/:id" element={<WorkflowDetail />} />
+                    <Route path="runs/:id" element={<RunViewer />} />
+                </Route>
+
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
-                
-                {/* Catch all */}
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
+              </Route>
+            </Routes>
             <CookieConsent />
           </Router>
         </AuthProvider>

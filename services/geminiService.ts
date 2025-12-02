@@ -1,38 +1,111 @@
-
 import { GoogleGenAI } from "@google/genai";
+import { CopilotPlan, StepRun, WorkflowStep } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
 const MODEL_NAME = 'gemini-2.5-flash';
 
-// --- Helper to parse JSON from AI response ---
+// Helper to clean JSON
 const cleanAndParseJSON = (text: string) => {
   try {
     if (!text) return null;
-    
-    // Remove markdown code blocks (```json ... ``` or just ``` ... ```)
     let clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    
-    // Robust extraction: Find the first '{' and last '}' to strip any conversational text
     const firstOpen = clean.indexOf('{');
     const lastClose = clean.lastIndexOf('}');
-    
     if (firstOpen !== -1 && lastClose !== -1) {
       clean = clean.substring(firstOpen, lastClose + 1);
     }
-
     return JSON.parse(clean);
   } catch (e) {
     console.error("JSON Parse Error", e);
-    // Return null so the UI can handle the error state gracefully
     return null;
   }
+};
+
+// --- PLANNER AGENT ---
+export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | null> => {
+    if (!process.env.API_KEY) {
+        // Mock Plan
+        return {
+            summary: "A simplified launch campaign for your product.",
+            steps: [
+                { title: "Generate Teaser Post", type: "generate_content", description: "Create excitement on LinkedIn", prompt: "Write a LinkedIn post teasing a new launch for " + goal },
+                { title: "Wait 1 Day", type: "wait", description: "Wait for engagement" },
+                { title: "Send Launch Email", type: "generate_content", description: "Email to list announcing live", prompt: "Write a short sales email for " + goal },
+                { title: "Update CRM", type: "update_crm", description: "Tag leads as 'Launch Targeted'" }
+            ]
+        };
+    }
+
+    const prompt = `
+        You are an expert Automation Architect.
+        Goal: "${goal}"
+
+        Create a structured workflow plan. 
+        Return ONLY a JSON object with this structure:
+        {
+            "summary": "Short description of the strategy",
+            "steps": [
+                {
+                    "title": "Step Name",
+                    "type": "generate_content" | "send_email" | "wait" | "update_crm",
+                    "description": "What this step does",
+                    "prompt": "The prompt needed for AI generation (if applicable)"
+                }
+            ]
+        }
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: MODEL_NAME,
+            contents: prompt,
+            config: { responseMimeType: "application/json" }
+        });
+        return cleanAndParseJSON(response.text || '{}');
+    } catch (e) {
+        console.error("Planner Error", e);
+        return null;
+    }
+};
+
+// --- EXECUTOR AGENT ---
+export const executeWorkflowStep = async (step: WorkflowStep, context: any = {}): Promise<string> => {
+    if (!process.env.API_KEY) {
+        await new Promise(r => setTimeout(r, 1000));
+        return `[Mock Output] Executed ${step.title}. Result: Success.`;
+    }
+
+    if (step.type === 'wait') {
+        // Simulation of waiting
+        return "Waited successfully.";
+    }
+
+    if (step.type === 'update_crm') {
+        return "CRM Updated successfully.";
+    }
+
+    // For content generation
+    const prompt = `
+        Task: ${step.config.promptTemplate || step.description}
+        Context: ${JSON.stringify(context)}
+        
+        Generate the content. Plain text only.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: MODEL_NAME,
+            contents: prompt,
+        });
+        return response.text || "No output generated.";
+    } catch (e) {
+        return "Error executing step.";
+    }
 };
 
 // --- Content Repurposing ---
 export const repurposeContent = async (text: string, tone: string) => {
   if (!process.env.API_KEY) {
-    // Robust Mock Data
     return {
       instagram: {
         script: "🔥 STOP SCROLLING! Here is how to automate your content...\n\n1. Use Templates\n2. Batch Create\n3. Use AI",
@@ -193,8 +266,7 @@ export const generateOnboardingPlan = async (data: any) => {
   }
 };
 
-
-// --- Existing Logic Preserved ---
+// --- Content Ideas ---
 export const generateContentIdeas = async (niche: string, platform: string, topic: string) => {
     if (!process.env.API_KEY) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
     const prompt = `Generate 3 viral hooks for ${niche} on ${platform} about ${topic}. JSON array of strings.`;

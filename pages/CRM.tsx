@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
 import { Plus, Mail, DollarSign, Trash2, ArrowRight, ArrowLeft, Sparkles, X } from 'lucide-react';
-import { mockDb, Lead } from '../services/mockDb';
+import { mockDb } from '../services/mockDb';
+import { Lead } from '../types';
 import Modal from '../components/Modal';
 import { analyzeLead } from '../services/geminiService';
 
