@@ -20,6 +20,9 @@ export const NAVIGATION_LINKS = [
   { label: 'Store', path: '/products' },
   { label: 'Playground', path: '/playground' },
   { label: 'Portfolio', path: '/portfolio' },
+  // Adding new links for the expanded OS features
+  { label: 'CRM', path: '/crm' },
+  { label: 'AI Repurpose', path: '/repurpose' },
 ];
 
 // Active Discount Codes

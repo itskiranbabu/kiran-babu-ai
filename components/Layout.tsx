@@ -1,17 +1,19 @@
 
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Github, Instagram, Linkedin, Twitter, BrainCircuit, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Github, Instagram, Linkedin, Twitter, BrainCircuit, LayoutDashboard, Youtube, Sun, Moon } from 'lucide-react';
 import { APP_NAME, NAVIGATION_LINKS } from '../constants';
 import ChatBot from './ChatBot';
+import { useTheme } from './ThemeContext';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-dark-bg text-gray-100 flex flex-col">
+    <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col transition-colors duration-300">
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-dark-border">
+      <nav className="sticky top-0 z-50 bg-dark-bg/80 backdrop-blur-md border-b border-dark-border transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             
@@ -23,7 +25,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     <div className="absolute inset-0 bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="font-bold text-lg text-white leading-tight group-hover:text-brand-200 transition-colors">
+                    <span className="font-bold text-lg text-dark-text leading-tight group-hover:text-brand-500 transition-colors">
                         {APP_NAME}
                     </span>
                     <span className="text-[10px] font-medium text-brand-400 uppercase tracking-widest">
@@ -41,7 +43,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   to={link.path}
                   className={({ isActive }) =>
                     `text-sm font-medium transition-colors duration-200 ${
-                      isActive ? 'text-brand-400' : 'text-gray-400 hover:text-white'
+                      isActive ? 'text-brand-500 font-bold' : 'text-dark-muted hover:text-dark-text'
                     }`
                   }
                 >
@@ -52,9 +54,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
             {/* CTA Button Desktop */}
             <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-dark-muted hover:text-dark-text transition-colors rounded-full hover:bg-dark-card"
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
               <Link
                 to="/dashboard"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-dark-muted hover:text-dark-text transition-colors"
                 title="Go to Dashboard"
               >
                 <LayoutDashboard size={20} />
@@ -68,10 +78,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="flex items-center md:hidden">
+            <div className="flex items-center md:hidden gap-4">
+              <button
+                onClick={toggleTheme}
+                className="text-dark-muted hover:text-dark-text"
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-400 hover:text-white focus:outline-none"
+                className="text-dark-muted hover:text-dark-text focus:outline-none"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -90,7 +106,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) =>
                     `block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      isActive ? 'text-brand-400 bg-dark-border' : 'text-gray-300 hover:text-white hover:bg-dark-border'
+                      isActive ? 'text-brand-500 bg-dark-border/50' : 'text-dark-muted hover:text-dark-text hover:bg-dark-border/30'
                     }`
                   }
                 >
@@ -101,7 +117,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   <Link
                     to="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-dark-border rounded-md font-medium"
+                    className="flex items-center gap-2 px-3 py-2 text-dark-muted hover:text-dark-text hover:bg-dark-border/30 rounded-md font-medium"
                   >
                     <LayoutDashboard size={18} /> Dashboard
                   </Link>
@@ -129,44 +145,45 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <ChatBot />
 
       {/* Footer */}
-      <footer className="bg-dark-card border-t border-dark-border py-12">
+      <footer className="bg-dark-card border-t border-dark-border py-12 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4 group w-fit">
                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center font-bold text-white group-hover:scale-105 transition-transform">
                 <BrainCircuit size={18} />
               </div>
-              <span className="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">{APP_NAME}</span>
+              <span className="text-xl font-bold text-dark-text group-hover:text-brand-500 transition-colors">{APP_NAME}</span>
             </Link>
-            <p className="text-gray-400 max-w-sm mb-6">
+            <p className="text-dark-muted max-w-sm mb-6">
               Empowering creators and solopreneurs with AI-driven systems, high-converting designs, and content strategies.
             </p>
             <div className="flex space-x-4">
-              <SocialLink icon={Instagram} href="#" />
-              <SocialLink icon={Twitter} href="#" />
-              <SocialLink icon={Linkedin} href="#" />
-              <SocialLink icon={Github} href="#" />
+              <SocialLink icon={Youtube} href="https://www.youtube.com/@itskiranbabu" />
+              <SocialLink icon={Linkedin} href="https://www.linkedin.com/in/itskiranbabu" />
+              <SocialLink icon={Twitter} href="https://x.com/itscontentspark" />
+              <SocialLink icon={Instagram} href="https://www.instagram.com/itskiranbabu/" />
+              <SocialLink icon={Github} href="https://github.com/itskiranbabu" />
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Brands</h4>
-            <ul className="space-y-3 text-gray-400">
-              <li><a href="#" className="hover:text-brand-400">@itskiranbabu</a></li>
-              <li><a href="#" className="hover:text-brand-400">@itskeyrun.ai</a></li>
-              <li><a href="#" className="hover:text-brand-400">@itscontentspark</a></li>
+            <h4 className="text-sm font-semibold text-dark-text uppercase tracking-wider mb-4">Brands</h4>
+            <ul className="space-y-3 text-dark-muted">
+              <li><a href="#" className="hover:text-brand-500">@itskiranbabu</a></li>
+              <li><a href="#" className="hover:text-brand-500">@itskeyrun.ai</a></li>
+              <li><a href="#" className="hover:text-brand-500">@itscontentspark</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Legal</h4>
-            <ul className="space-y-3 text-gray-400">
-              <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
-              <li><Link to="/book" className="hover:text-white">Contact</Link></li>
-              <li><Link to="/dashboard" className="hover:text-white">Client Portal</Link></li>
+            <h4 className="text-sm font-semibold text-dark-text uppercase tracking-wider mb-4">Legal</h4>
+            <ul className="space-y-3 text-dark-muted">
+              <li><Link to="/privacy" className="hover:text-dark-text">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-dark-text">Terms of Service</Link></li>
+              <li><Link to="/book" className="hover:text-dark-text">Contact</Link></li>
+              <li><Link to="/dashboard" className="hover:text-dark-text">Client Portal</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-dark-border text-center text-gray-500 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-dark-border text-center text-dark-muted text-sm">
           &copy; {new Date().getFullYear()} Kiran Babu. All rights reserved.
         </div>
       </footer>
@@ -175,7 +192,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const SocialLink = ({ icon: Icon, href }: { icon: any, href: string }) => (
-  <a href={href} className="text-gray-400 hover:text-brand-400 transition-colors">
+  <a 
+    href={href} 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="text-dark-muted hover:text-brand-500 transition-colors"
+  >
     <Icon size={20} />
   </a>
 );

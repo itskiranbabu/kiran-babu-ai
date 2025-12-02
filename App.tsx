@@ -15,31 +15,41 @@ import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
 import { ToastProvider } from './components/ToastContext';
 import CookieConsent from './components/CookieConsent';
+import { ThemeProvider } from './components/ThemeContext';
+import CRM from './pages/CRM';
+import Repurpose from './pages/Repurpose';
 
 const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <Router>
-        <ScrollToTop />
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/playground" element={<Playground />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/book" element={<BookCall />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            
-            {/* Catch all route handles 404s */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-        <CookieConsent />
-      </Router>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <Router>
+          <ScrollToTop />
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/playground" element={<Playground />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/book" element={<BookCall />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              
+              {/* New SaaS Features */}
+              <Route path="/crm" element={<CRM />} />
+              <Route path="/repurpose" element={<Repurpose />} />
+              
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              
+              {/* Catch all route handles 404s */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+          <CookieConsent />
+        </Router>
+      </ToastProvider>
+    </ThemeProvider>
   );
 };
 
