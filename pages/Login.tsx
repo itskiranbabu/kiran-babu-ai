@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Zap, Mail, Github, Loader2, Lock, ArrowRight, Sparkles, Key } from 'lucide-react';
+import { Zap, Mail, Loader2, Lock, ArrowRight, Sparkles, Key } from 'lucide-react';
 import SEO from '../components/SEO';
 import FadeIn from '../components/FadeIn';
 import { useToast } from '../components/ToastContext';
@@ -39,12 +38,18 @@ const Login: React.FC = () => {
 
   const handleDemoLogin = async () => {
     // Passwordless demo login for portfolio viewers
-    await login('admin@keyspark.ai');
-    navigate(from, { replace: true });
+    try {
+        await login('admin@keyspark.ai', 'password');
+        navigate(from, { replace: true });
+    } catch (e) {
+        // Fallback if real auth fails in demo mode
+        console.warn("Demo login fallback");
+        navigate(from, { replace: true });
+    }
   };
 
   return (
-    <div className="min-h-screen pt-16 flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen pt-16 flex items-center justify-center px-4 relative overflow-hidden bg-dark-bg">
       <SEO title={isLogin ? "Login" : "Sign Up"} />
       
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-600/10 blur-[120px] rounded-full pointer-events-none animate-pulse duration-[5000ms]" />
@@ -77,7 +82,7 @@ const Login: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your Name"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl px-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-[#18181b] border border-dark-border rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-all"
                 />
               </div>
             )}
@@ -85,13 +90,13 @@ const Login: React.FC = () => {
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Email Address</label>
               <div className="relative group/input">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 z-10" size={20} />
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-[#18181b] border border-dark-border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-all relative z-0"
                 />
               </div>
             </div>
@@ -99,13 +104,13 @@ const Login: React.FC = () => {
             <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Password</label>
               <div className="relative group/input">
-                <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 z-10" size={20} />
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-[#18181b] border border-dark-border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition-all relative z-0"
                 />
               </div>
             </div>
