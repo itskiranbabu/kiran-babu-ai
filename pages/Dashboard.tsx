@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
@@ -6,19 +7,31 @@ import {
   LogOut, 
   User, 
   Bell,
-  ChevronRight
+  ChevronRight,
+  Save,
+  Check
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import ContentGenerator from '../components/ContentGenerator';
 import FadeIn from '../components/FadeIn';
 import { mockDb } from '../services/mockDb';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/ToastContext';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'ai-studio' | 'settings'>('ai-studio');
   const [stats, setStats] = useState({ ideasGenerated: 0, savedPrompts: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
-  const { user } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
+  const { addToast } = useToast();
+
+  // Settings State
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    avatar: user?.avatar || '',
+    notifications: true
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -28,6 +41,28 @@ const Dashboard: React.FC = () => {
     };
     fetchStats();
   }, []);
+
+  // Update form when user loads
+  useEffect(() => {
+    if (user) {
+        setFormData(prev => ({
+            ...prev,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar
+        }));
+    }
+  }, [user]);
+
+  const handleSaveSettings = (e: React.FormEvent) => {
+      e.preventDefault();
+      updateProfile({
+          name: formData.name,
+          email: formData.email,
+          avatar: formData.avatar
+      });
+      addToast('Profile updated successfully!', 'success');
+  };
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -51,7 +86,7 @@ const Dashboard: React.FC = () => {
                     {user?.avatar && <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />}
                   </div>
                   <div>
-                    <h3 className="text-white font-medium text-sm">{user?.name || 'Creator'}</h3>
+                    <h3 className="text-white font-medium text-sm truncate max-w-[120px]">{user?.name || 'Creator'}</h3>
                     <p className="text-xs text-gray-500">Pro Plan</p>
                   </div>
                 </div>
@@ -75,7 +110,10 @@ const Dashboard: React.FC = () => {
                 </nav>
 
                 <div className="mt-8 pt-6 border-t border-dark-border/50">
-                   <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                   <button 
+                    onClick={logout}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                   >
                      <LogOut size={18} />
                      Sign Out
                    </button>
@@ -139,11 +177,64 @@ const Dashboard: React.FC = () => {
                 )}
 
                 {activeTab === 'settings' && (
-                  <div className="bg-dark-card border border-dark-border rounded-xl p-8 text-center">
-                    <Settings size={48} className="mx-auto text-gray-600 mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">Account Settings</h3>
-                    <p className="text-gray-400">Manage your subscription and profile preferences.</p>
-                    <p className="text-sm text-gray-500 mt-4">(Coming soon in full version)</p>
+                  <div className="bg-dark-card border border-dark-border rounded-xl p-8">
+                    <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <User size={20} className="text-brand-400" /> Profile Settings
+                    </h3>
+                    
+                    <form onSubmit={handleSaveSettings} className="space-y-6 max-w-lg">
+                        <div className="flex items-center gap-6">
+                            <div className="w-20 h-20 rounded-full bg-dark-bg border border-dark-border overflow-hidden">
+                                <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            </div>
+                            <div className="flex-grow">
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Avatar URL</label>
+                                <input 
+                                    type="text"
+                                    value={formData.avatar}
+                                    onChange={(e) => setFormData({...formData, avatar: e.target.value})}
+                                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Display Name</label>
+                                <input 
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:border-brand-500 focus:outline-none transition-colors"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
+                                <input 
+                                    type="email"
+                                    value={formData.email}
+                                    disabled
+                                    className="w-full bg-dark-bg/50 border border-dark-border rounded-lg px-4 py-3 text-gray-500 cursor-not-allowed"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-dark-border">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <div className={`w-10 h-6 rounded-full p-1 transition-colors ${formData.notifications ? 'bg-brand-600' : 'bg-dark-bg border border-dark-border'}`}>
+                                    <div className={`w-4 h-4 rounded-full bg-white transition-transform ${formData.notifications ? 'translate-x-4' : ''}`} />
+                                </div>
+                                <span className="text-white text-sm">Enable Email Notifications</span>
+                            </label>
+                        </div>
+
+                        <button 
+                            type="submit"
+                            className="px-6 py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2"
+                        >
+                            <Save size={18} /> Save Changes
+                        </button>
+                    </form>
                   </div>
                 )}
              </FadeIn>

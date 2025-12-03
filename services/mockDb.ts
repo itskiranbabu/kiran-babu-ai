@@ -47,7 +47,6 @@ export interface AnalyticsData {
 }
 
 // --- Supabase Client ---
-// Using robust getEnv helper to avoid "undefined" errors
 const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL');
 const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
@@ -366,7 +365,6 @@ export const mockDb = {
         if (updates.startedAt) payload.started_at = new Date(updates.startedAt).toISOString();
         if (updates.finishedAt) payload.finished_at = new Date(updates.finishedAt).toISOString();
         
-        // Supabase needs the ID of the step run
         const { data } = await supabase.from('workflow_step_runs')
             .select('id')
             .eq('workflow_run_id', runId)
@@ -386,6 +384,15 @@ export const mockDb = {
         runs[runIndex].stepRuns[stepIndex] = { ...runs[runIndex].stepRuns[stepIndex], ...updates };
         localStorage.setItem('kb_runs', JSON.stringify(runs));
       }
+    }
+  },
+
+  // --- Email System ---
+  logEmail: async (recipient: string, subject: string, body: string) => {
+    if (supabase) {
+        await supabase.from('sent_emails').insert([{ recipient, subject, body }]);
+    } else {
+        console.log(`[MOCK EMAIL] To: ${recipient}, Subject: ${subject}`);
     }
   },
 

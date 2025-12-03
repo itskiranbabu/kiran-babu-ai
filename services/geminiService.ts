@@ -1,33 +1,35 @@
 import { GoogleGenAI } from "@google/genai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
 import { getEnv } from '../utils/env';
+import { mockDb } from './mockDb';
 
-const apiKey = getEnv('API_KEY');
+// Helper to strip quotes if Vercel injected them
+const cleanKey = (key: string | undefined) => {
+    if (!key) return '';
+    return key.replace(/["']/g, '').trim();
+};
+
+const rawKey = getEnv('API_KEY');
+const apiKey = cleanKey(rawKey);
+
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
-// Ensure we use a stable model version
 const MODEL_NAME = 'gemini-2.5-flash';
 
 if (!ai) {
-  console.warn("⚠️ Gemini API Key missing or invalid. App is running in Mock/Demo Mode.");
-} else {
-  console.log("✅ Gemini API initialized successfully.");
+  console.warn("⚠️ App is running in Mock/Demo Mode.");
 }
 
 // Helper to clean JSON
 const cleanAndParseJSON = (text: string) => {
   try {
     if (!text) return null;
-    // Remove markdown code blocks
     let clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    
-    // Attempt to find the first '{' and last '}' to handle preamble/postscript text
     const firstOpen = clean.indexOf('{');
     const lastClose = clean.lastIndexOf('}');
     
     if (firstOpen !== -1 && lastClose !== -1) {
       clean = clean.substring(firstOpen, lastClose + 1);
     } else {
-        // If no object found, maybe it's an array?
         const firstArr = clean.indexOf('[');
         const lastArr = clean.lastIndexOf(']');
         if (firstArr !== -1 && lastArr !== -1) {
@@ -52,7 +54,7 @@ export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | 
             steps: [
                 { title: "Generate Teaser Post", type: "generate_content", description: "Create excitement on LinkedIn", prompt: "Write a LinkedIn post teasing a new launch for " + goal },
                 { title: "Wait 1 Day", type: "wait", description: "Wait for engagement" },
-                { title: "Send Launch Email", type: "generate_content", description: "Email to list announcing live", prompt: "Write a short sales email for " + goal },
+                { title: "Send Launch Email", type: "send_email", description: "Email to list announcing live", prompt: "Write a short sales email for " + goal },
                 { title: "Update CRM", type: "update_crm", description: "Tag leads as 'Launch Targeted'" }
             ]
         };
@@ -105,6 +107,17 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
         return "CRM Updated successfully.";
     }
 
+    if (step.type === 'send_email') {
+        // Generate Email Content first
+        const prompt = `Write an email subject and body for: ${step.config.promptTemplate || step.description}`;
+        const response = await ai.models.generateContent({ model: MODEL_NAME, contents: prompt });
+        const content = response.text || "No content.";
+        
+        // "Send" it (Log to DB)
+        await mockDb.logEmail("client@example.com", "Automated Email", content);
+        return `Email Sent: ${content.substring(0, 50)}...`;
+    }
+
     const prompt = `
         Task: ${step.config.promptTemplate || step.description}
         Context: ${JSON.stringify(context)}
@@ -123,7 +136,32 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
     }
 };
 
-// --- Content Repurposing ---
+// --- Smart CRM Outreach ---
+export const generateOutreachEmail = async (leadData: any) => {
+    if (!ai) return "Hi [Name], saw your work in [Niche] and would love to connect.";
+
+    const prompt = `
+        Draft a cold outreach email for a potential client.
+        Client Name: ${leadData.name}
+        Client Budget: ${leadData.value}
+        Source: ${leadData.source}
+        
+        Tone: Professional, Persuasive, Short (under 100 words).
+        Goal: Book a call.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: MODEL_NAME,
+            contents: prompt,
+        });
+        return response.text;
+    } catch (e) {
+        return "Could not generate email.";
+    }
+};
+
+// --- Existing Functions ---
 export const repurposeContent = async (text: string, tone: string) => {
   if (!ai) {
     console.log("Mock Mode: Returning default repurpose data.");
@@ -140,7 +178,6 @@ export const repurposeContent = async (text: string, tone: string) => {
     };
   }
 
-  console.log("Calling Gemini API for Repurposing...");
   const prompt = `
     Act as a professional social media manager.
     Source Text: "${text}"
@@ -172,18 +209,13 @@ export const repurposeContent = async (text: string, tone: string) => {
         contents: prompt,
         config: { responseMimeType: "application/json" }
       });
-      const parsed = cleanAndParseJSON(response.text || '{}');
-      if (!parsed || Object.keys(parsed).length === 0) {
-          throw new Error("Empty JSON returned from AI");
-      }
-      return parsed;
+      return cleanAndParseJSON(response.text || '{}');
   } catch (e) {
       console.error("Repurpose Error:", e);
       return null;
   }
 };
 
-// --- Magic Rewrite / Refine ---
 export const refineContent = async (text: string, platform: string, instruction: string) => {
     if (!ai) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
 
@@ -206,7 +238,6 @@ export const refineContent = async (text: string, platform: string, instruction:
     }
 };
 
-// --- Campaign Copilot ---
 export const generateCampaign = async (goal: string) => {
   if (!ai) {
     return {
@@ -248,7 +279,6 @@ export const generateCampaign = async (goal: string) => {
   }
 };
 
-// --- Lead Insight ---
 export const analyzeLead = async (leadData: any) => {
   if (!ai) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
 
@@ -273,7 +303,6 @@ export const analyzeLead = async (leadData: any) => {
   }
 };
 
-// --- Onboarding Plan ---
 export const generateOnboardingPlan = async (data: any) => {
   if (!ai) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
   
@@ -296,7 +325,6 @@ export const generateOnboardingPlan = async (data: any) => {
   }
 };
 
-// --- Content Ideas ---
 export const generateContentIdeas = async (niche: string, platform: string, topic: string) => {
     if (!ai) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
     const prompt = `Generate 3 viral hooks for ${niche} on ${platform} about ${topic}. JSON array of strings.`;

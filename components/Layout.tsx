@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Github, Instagram, Linkedin, Twitter, Zap, LayoutDashboard, Youtube, Sun, Moon, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, Github, Instagram, Linkedin, Twitter, Zap, LayoutDashboard, Youtube, Sun, Moon, LogOut, ChevronDown, User, Settings, CreditCard } from 'lucide-react';
 import { APP_NAME, NAVIGATION_LINKS, SAAS_LINKS } from '../constants';
 import ChatBot from './ChatBot';
 import { useTheme } from './ThemeContext';
@@ -13,6 +13,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
@@ -24,6 +25,20 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (user) return "/dashboard";
     return "/onboarding";
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col transition-colors duration-300">
@@ -75,33 +90,60 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     Login
                   </Link>
               ) : (
-                 <div className="relative">
+                 <div className="relative" ref={dropdownRef}>
                      <button 
                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                        className="flex items-center gap-2 text-sm font-medium text-dark-muted hover:text-dark-text transition-colors focus:outline-none"
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors focus:outline-none px-3 py-2 rounded-lg ${isUserMenuOpen ? 'bg-dark-card text-white' : 'text-dark-muted hover:text-dark-text hover:bg-white/5'}`}
                      >
-                         <span>Dashboard</span> <ChevronDown size={14} />
+                         <LayoutDashboard size={16} />
+                         <span>Dashboard</span> 
+                         <ChevronDown size={14} className={`transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                      </button>
                      
                      {isUserMenuOpen && (
-                         <div className="absolute top-full right-0 mt-2 w-48 bg-dark-card border border-dark-border rounded-xl shadow-xl py-1 animate-in fade-in zoom-in duration-200">
-                             {SAAS_LINKS.map(link => (
-                                 <Link 
-                                    key={link.path}
-                                    to={link.path}
-                                    onClick={() => setIsUserMenuOpen(false)}
-                                    className="block px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5"
-                                 >
-                                     {link.label}
+                         <div className="absolute top-full right-0 mt-2 w-56 bg-dark-card border border-dark-border rounded-xl shadow-2xl py-2 animate-in fade-in zoom-in duration-200 z-50 overflow-hidden">
+                             <div className="px-4 py-2 border-b border-dark-border mb-2">
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">My Account</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-brand-600 overflow-hidden">
+                                        {user.avatar && <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />}
+                                    </div>
+                                    <p className="text-white text-sm font-medium truncate">{user.name}</p>
+                                </div>
+                             </div>
+
+                             <div className="px-2 space-y-0.5">
+                                 {SAAS_LINKS.slice(0, 4).map(link => (
+                                     <Link 
+                                        key={link.path}
+                                        to={link.path}
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                        className="block px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                     >
+                                         {link.label}
+                                     </Link>
+                                 ))}
+                             </div>
+                             
+                             <div className="border-t border-dark-border my-2 mx-4"></div>
+                             
+                             <div className="px-2 space-y-0.5">
+                                 <Link to="/dashboard" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg">
+                                     <Settings size={14} /> Settings
                                  </Link>
-                             ))}
-                             <div className="border-t border-dark-border my-1"></div>
-                             <button 
-                                onClick={handleLogout}
-                                className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2"
-                             >
-                                 <LogOut size={14} /> Sign Out
-                             </button>
+                                 <Link to="/products" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/10 rounded-lg">
+                                     <CreditCard size={14} /> Billing
+                                 </Link>
+                             </div>
+
+                             <div className="border-t border-dark-border mt-2 pt-2 px-2 pb-1">
+                                 <button 
+                                    onClick={handleLogout}
+                                    className="w-full text-left px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg flex items-center gap-2 transition-colors"
+                                 >
+                                     <LogOut size={14} /> Sign Out
+                                 </button>
+                             </div>
                          </div>
                      )}
                  </div>
@@ -126,9 +168,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </Link>
               
               {user && (
-                 <div className="w-8 h-8 rounded-full bg-brand-600 border border-brand-400 overflow-hidden">
+                 <button onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="w-8 h-8 rounded-full bg-brand-600 border border-brand-400 overflow-hidden hover:ring-2 hover:ring-brand-500/50 transition-all">
                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                 </div>
+                 </button>
               )}
             </div>
 

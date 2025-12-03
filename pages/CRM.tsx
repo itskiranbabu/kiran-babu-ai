@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
-import { Plus, Mail, DollarSign, Trash2, ArrowRight, ArrowLeft, Sparkles, X, Loader2 } from 'lucide-react';
+import { Plus, Mail, DollarSign, Trash2, ArrowRight, ArrowLeft, Sparkles, X, Loader2, Send } from 'lucide-react';
 import { mockDb } from '../services/mockDb';
 import { Lead } from '../types';
 import Modal from '../components/Modal';
-import { analyzeLead } from '../services/geminiService';
+import { analyzeLead, generateOutreachEmail } from '../services/geminiService';
+import { useToast } from '../components/ToastContext';
 
 const COLUMNS = ['New Lead', 'Qualified', 'Proposal Sent', 'Closed Won'];
 
@@ -18,6 +19,11 @@ const CRM: React.FC = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [aiInsight, setAiInsight] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
+  
+  // Email Drafting State
+  const [draftingEmail, setDraftingEmail] = useState(false);
+  const [emailDraft, setEmailDraft] = useState('');
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,10 +66,27 @@ const CRM: React.FC = () => {
   const handleSelectLead = async (lead: Lead) => {
     setSelectedLead(lead);
     setAiInsight('');
+    setEmailDraft('');
     setAnalyzing(true);
     const insight = await analyzeLead(lead);
     setAiInsight(insight || '');
     setAnalyzing(false);
+  };
+
+  const handleDraftEmail = async () => {
+      if (!selectedLead) return;
+      setDraftingEmail(true);
+      const draft = await generateOutreachEmail(selectedLead);
+      setEmailDraft(draft || "Could not generate draft.");
+      setDraftingEmail(false);
+  };
+
+  const handleSendEmail = async () => {
+      // Simulate sending via our DB Logger
+      if (!selectedLead) return;
+      await mockDb.logEmail(selectedLead.email, "Outreach", emailDraft);
+      addToast(`Email sent to ${selectedLead.email}!`, 'success');
+      setEmailDraft('');
   };
 
   return (
@@ -123,9 +146,9 @@ const CRM: React.FC = () => {
 
             {/* AI Side Panel */}
             {selectedLead && (
-                <div className="w-80 bg-dark-card border border-dark-border rounded-xl p-6 shadow-2xl animate-in slide-in-from-right-10 flex flex-col">
+                <div className="w-96 bg-dark-card border border-dark-border rounded-xl p-6 shadow-2xl animate-in slide-in-from-right-10 flex flex-col overflow-y-auto">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-bold text-white flex items-center gap-2"><Sparkles size={16} className="text-brand-400" /> AI Insights</h3>
+                        <h3 className="font-bold text-white flex items-center gap-2"><Sparkles size={16} className="text-brand-400" /> Lead Intelligence</h3>
                         <button onClick={() => setSelectedLead(null)} className="text-gray-500 hover:text-white"><X size={18} /></button>
                     </div>
                     
@@ -134,18 +157,51 @@ const CRM: React.FC = () => {
                         <div className="text-sm text-gray-400 flex items-center gap-2"><Mail size={12} /> {selectedLead.email}</div>
                     </div>
 
-                    <div className="flex-grow">
+                    <div className="mb-6">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Analysis</h4>
                         {analyzing ? (
                             <div className="flex items-center gap-2 text-brand-400 text-sm"><Sparkles className="animate-spin" size={14} /> Analyzing Deal...</div>
                         ) : (
-                            <div className="bg-brand-900/10 border border-brand-500/20 rounded-lg p-4 text-sm text-gray-300 leading-relaxed">
+                            <div className="bg-brand-900/10 border border-brand-500/20 rounded-lg p-3 text-sm text-gray-300 leading-relaxed">
                                 {aiInsight}
                             </div>
                         )}
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-dark-border">
-                        <button className="w-full py-2 bg-white text-black font-bold rounded hover:bg-gray-200">Email Client</button>
+                    <div className="flex-grow">
+                        <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Actions</h4>
+                        {!emailDraft ? (
+                            <button 
+                                onClick={handleDraftEmail}
+                                disabled={draftingEmail}
+                                className="w-full py-2 bg-dark-bg border border-brand-500/30 text-brand-300 font-medium rounded hover:bg-brand-900/20 flex items-center justify-center gap-2"
+                            >
+                                {draftingEmail ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
+                                Draft Cold Email
+                            </button>
+                        ) : (
+                            <div className="space-y-2">
+                                <textarea 
+                                    value={emailDraft}
+                                    onChange={(e) => setEmailDraft(e.target.value)}
+                                    className="w-full h-40 bg-dark-bg border border-dark-border rounded p-3 text-sm text-gray-300 resize-none focus:outline-none focus:border-brand-500"
+                                />
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => setEmailDraft('')}
+                                        className="flex-1 py-2 bg-dark-bg text-gray-400 font-bold rounded hover:text-white"
+                                    >
+                                        Discard
+                                    </button>
+                                    <button 
+                                        onClick={handleSendEmail}
+                                        className="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded flex items-center justify-center gap-2"
+                                    >
+                                        <Send size={14} /> Send
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
