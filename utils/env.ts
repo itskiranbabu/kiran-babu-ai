@@ -1,16 +1,14 @@
 /**
  * Safely retrieves environment variables.
+ * Prioritizes window.__ENV__ injected by Vite config.
  */
 export function getEnv(key: string, fallback?: string): string | undefined {
   let value: string | undefined;
 
-  // 1. Try process.env (Injected by vite.config.ts define)
-  try {
-    if (typeof process !== 'undefined' && process.env) {
-      value = process.env[key];
-    }
-  } catch (e) {
-    // process undefined
+  // 1. Try window object (Injected by vite.config.ts define)
+  if (typeof window !== 'undefined') {
+    // @ts-ignore
+    value = window.__ENV__?.[key];
   }
 
   // 2. Try import.meta.env (Vite standard)
