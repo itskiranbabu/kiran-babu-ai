@@ -4,25 +4,40 @@ import { getEnv } from '../utils/env';
 
 const apiKey = getEnv('API_KEY');
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+// Ensure we use a stable model version
 const MODEL_NAME = 'gemini-2.5-flash';
 
 if (!ai) {
-  console.warn("Gemini API Key missing. Running in Mock Mode.");
+  console.warn("⚠️ Gemini API Key missing or invalid. App is running in Mock/Demo Mode.");
+} else {
+  console.log("✅ Gemini API initialized successfully.");
 }
 
 // Helper to clean JSON
 const cleanAndParseJSON = (text: string) => {
   try {
     if (!text) return null;
+    // Remove markdown code blocks
     let clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    // Attempt to find the first '{' and last '}' to handle preamble/postscript text
     const firstOpen = clean.indexOf('{');
     const lastClose = clean.lastIndexOf('}');
+    
     if (firstOpen !== -1 && lastClose !== -1) {
       clean = clean.substring(firstOpen, lastClose + 1);
+    } else {
+        // If no object found, maybe it's an array?
+        const firstArr = clean.indexOf('[');
+        const lastArr = clean.lastIndexOf(']');
+        if (firstArr !== -1 && lastArr !== -1) {
+            clean = clean.substring(firstArr, lastArr + 1);
+        }
     }
+    
     return JSON.parse(clean);
   } catch (e) {
-    console.error("JSON Parse Error", e);
+    console.error("JSON Parse Error. Raw Text:", text, e);
     return null;
   }
 };
@@ -33,7 +48,7 @@ export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | 
         await new Promise(r => setTimeout(r, 1500));
         // Mock Plan
         return {
-            summary: "A simplified launch campaign for your product (Mock Plan).",
+            summary: "A simplified launch campaign for your product (Demo Mode - No API Key).",
             steps: [
                 { title: "Generate Teaser Post", type: "generate_content", description: "Create excitement on LinkedIn", prompt: "Write a LinkedIn post teasing a new launch for " + goal },
                 { title: "Wait 1 Day", type: "wait", description: "Wait for engagement" },
@@ -83,7 +98,6 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
     }
 
     if (step.type === 'wait') {
-        // Simulation of waiting
         return "Waited successfully.";
     }
 
@@ -91,7 +105,6 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
         return "CRM Updated successfully.";
     }
 
-    // For content generation
     const prompt = `
         Task: ${step.config.promptTemplate || step.description}
         Context: ${JSON.stringify(context)}
@@ -113,6 +126,7 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
 // --- Content Repurposing ---
 export const repurposeContent = async (text: string, tone: string) => {
   if (!ai) {
+    console.log("Mock Mode: Returning default repurpose data.");
     await new Promise(r => setTimeout(r, 2000));
     return {
       instagram: {
@@ -126,12 +140,16 @@ export const repurposeContent = async (text: string, tone: string) => {
     };
   }
 
+  console.log("Calling Gemini API for Repurposing...");
   const prompt = `
     Act as a professional social media manager.
     Source Text: "${text}"
     Tone: ${tone}
 
-    Repurpose this content into 4 formats. Return ONLY a valid JSON object with these keys:
+    Repurpose this content into 4 formats. 
+    IMPORTANT: Return ONLY a valid JSON object. Do not wrap in markdown.
+    
+    Structure:
     {
       "instagram": {
         "script": "Reel script (max 30s) with visual cues",
@@ -154,9 +172,13 @@ export const repurposeContent = async (text: string, tone: string) => {
         contents: prompt,
         config: { responseMimeType: "application/json" }
       });
-      return cleanAndParseJSON(response.text || '{}');
+      const parsed = cleanAndParseJSON(response.text || '{}');
+      if (!parsed || Object.keys(parsed).length === 0) {
+          throw new Error("Empty JSON returned from AI");
+      }
+      return parsed;
   } catch (e) {
-      console.error("Repurpose Error", e);
+      console.error("Repurpose Error:", e);
       return null;
   }
 };
@@ -188,7 +210,7 @@ export const refineContent = async (text: string, platform: string, instruction:
 export const generateCampaign = async (goal: string) => {
   if (!ai) {
     return {
-      campaign_summary: "Launch a comprehensive 7-day sprint focusing on value-first education followed by a scarcity offer.",
+      campaign_summary: "Launch a comprehensive 7-day sprint focusing on value-first education followed by a scarcity offer (Demo Mode).",
       target_audience: "Creators and Solopreneurs earning $0-$5k/mo",
       daily_plan: [
         { day: 1, theme: "The Problem", action_items: ["Post IG Reel about the struggle", "Send teaser email"], platforms: ["IG", "Email"] },

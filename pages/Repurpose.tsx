@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
-import { Sparkles, Copy, Loader2, Linkedin, Instagram, Twitter, Youtube, RefreshCw, Wand2 } from 'lucide-react';
+import { Sparkles, Copy, Loader2, Linkedin, Instagram, Twitter, Youtube, RefreshCw, Wand2, AlertTriangle } from 'lucide-react';
 import { repurposeContent, refineContent } from '../services/geminiService';
 import { useToast } from '../components/ToastContext';
 import { mockDb } from '../services/mockDb';
@@ -15,16 +15,26 @@ const Repurpose: React.FC = () => {
   const [activeTab, setActiveTab] = useState('linkedin');
   const { addToast } = useToast();
   const [isRefining, setIsRefining] = useState(false);
+  const [error, setError] = useState('');
 
   const handleGenerate = async () => {
     if (!inputText) return;
     setIsGenerating(true);
+    setError('');
     setOutput(null); 
-    const result = await repurposeContent(inputText, tone);
-    if (result) {
-        setOutput(result);
-        await mockDb.incrementUserStat('ideasGenerated');
+    
+    try {
+        const result = await repurposeContent(inputText, tone);
+        if (result) {
+            setOutput(result);
+            await mockDb.incrementUserStat('ideasGenerated');
+        } else {
+            setError("Failed to generate content. Please check your API key or try again.");
+        }
+    } catch (e) {
+        setError("An unexpected error occurred during generation.");
     }
+    
     setIsGenerating(false);
   };
 
@@ -125,7 +135,13 @@ const Repurpose: React.FC = () => {
 
         {/* Output Column */}
         <div>
-            {!output ? (
+            {error ? (
+                <div className="h-full min-h-[400px] bg-dark-card/50 border border-red-500/30 rounded-xl flex items-center justify-center text-red-300 flex-col gap-4 p-6 text-center">
+                    <AlertTriangle size={48} className="opacity-50" />
+                    <p>{error}</p>
+                    <button onClick={() => setError('')} className="text-sm underline">Dismiss</button>
+                </div>
+            ) : !output ? (
                 <div className="h-full min-h-[400px] bg-dark-card/50 border border-dark-border border-dashed rounded-xl flex items-center justify-center text-gray-500 flex-col gap-4">
                     {isGenerating ? (
                         <>
