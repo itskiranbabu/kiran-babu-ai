@@ -1,6 +1,5 @@
 /**
  * Safely retrieves environment variables.
- * Compatible with both Vite local dev and Vercel production builds.
  */
 export function getEnv(key: string, fallback?: string): string | undefined {
   let value: string | undefined;
@@ -11,10 +10,10 @@ export function getEnv(key: string, fallback?: string): string | undefined {
       value = process.env[key];
     }
   } catch (e) {
-    // process might not be defined in strict browser environments
+    // process undefined
   }
 
-  // 2. Try import.meta.env (Vite standard fallback)
+  // 2. Try import.meta.env (Vite standard)
   if (!value) {
     try {
       // @ts-ignore
