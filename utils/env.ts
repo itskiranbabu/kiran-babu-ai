@@ -1,36 +1,29 @@
 /**
- * Safely retrieves environment variables.
- * Prioritizes standard Vite/Process injection.
+ * Safely retrieves environment variables across different build tools (Vite, Next.js, Node).
  */
 export function getEnv(key: string, fallback?: string): string | undefined {
   let value: string | undefined;
 
-  // 1. Try process.env (Injected by vite.config.ts define)
+  // 1. Try import.meta.env (Vite standard)
   try {
-    if (typeof process !== 'undefined' && process.env) {
-      value = process.env[key];
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      value = import.meta.env[key];
     }
   } catch (e) {
-    // process might not be defined in strict browser environments
+    // Ignore
   }
 
-  // 2. Try import.meta.env (Vite standard fallback)
+  // 2. Try process.env (Node/Vercel standard)
   if (!value) {
     try {
-      // @ts-ignore
-      if (typeof import.meta !== 'undefined' && import.meta.env) {
-        // @ts-ignore
-        value = import.meta.env[key];
+      if (typeof process !== 'undefined' && process.env) {
+        value = process.env[key];
       }
     } catch (e) {
-      // import.meta might not be available
+      // Ignore
     }
-  }
-
-  // 3. Fallback for potential window injections (optional safety net)
-  if (!value && typeof window !== 'undefined') {
-    // @ts-ignore
-    value = window.__ENV__?.[key];
   }
 
   return value || fallback;
