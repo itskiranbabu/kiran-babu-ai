@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../services/mockDb';
+import { supabase } from '../services/supabaseClient';
 
 interface User {
   id: string;
@@ -29,25 +29,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initAuth = async () => {
       // 1. If Supabase is connected, check real session
       if (supabase) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          setUser({
-            id: session.user.id,
-            email: session.user.email || '',
-            name: profile?.full_name || session.user.email?.split('@')[0] || 'Creator',
-            avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80',
-            role: 'admin'
-          });
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+    
+              setUser({
+                id: session.user.id,
+                email: session.user.email || '',
+                name: profile?.full_name || session.user.email?.split('@')[0] || 'Creator',
+                avatar: profile?.avatar_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80',
+                role: 'admin'
+              });
+            }
+        } catch (e) {
+            console.warn("Supabase Auth Check Failed:", e);
         }
       } 
       // 2. Fallback to LocalStorage for Demo Mode if no Supabase or no Session
-      else {
+      if (!user) {
         const storedUser = localStorage.getItem('kb_user');
         if (storedUser) {
           setUser(JSON.parse(storedUser));
@@ -88,10 +92,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     
     if (supabase && password) {
-      // Real Supabase Login
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      try {
+          // Real Supabase Login
+          const { error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+      } catch (err: any) {
+          console.error("Supabase Login Failed:", err);
+          
+          // Graceful fallback if it's a connection issue (status 400/500), but throw on wrong password
+          if (err.status >= 500 || err.message?.includes('fetch')) {
+              console.warn("Falling back to Demo Mode due to server error");
+              mockLogin(email);
+          } else {
+              setIsLoading(false);
+              throw err; // Wrong password, let UI handle it
+          }
+      }
     } else {
+      await mockLogin(email);
+    }
+    setIsLoading(false);
+  };
+
+  const mockLogin = async (email: string) => {
       // Mock/Demo Login
       await new Promise(resolve => setTimeout(resolve, 800));
       const derivedName = email.split('@')[0].replace(/[0-9]/g, '');
@@ -106,8 +129,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(newUser);
       localStorage.setItem('kb_user', JSON.stringify(newUser));
-    }
-    setIsLoading(false);
   };
 
   // --- Signup Logic ---

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Terminal, CheckCircle, Circle, Loader2, ArrowLeft } from 'lucide-react';
-import { mockDb, supabase } from '../services/mockDb';
+import { mockDb } from '../services/mockDb';
+import { supabase } from '../services/supabaseClient';
 import { executeWorkflowStep } from '../services/geminiService';
 import { WorkflowRun, Workflow } from '../types';
 

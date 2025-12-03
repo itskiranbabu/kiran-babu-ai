@@ -1,6 +1,8 @@
 import { Lead, Workflow, WorkflowStep, WorkflowRun, StepRun, CopilotPlan } from '../types';
-import { createClient } from '@supabase/supabase-js';
-import { getEnv } from '../utils/env';
+import { supabase } from './supabaseClient';
+
+// Re-export supabase for backward compatibility with components importing from here
+export { supabase };
 
 // --- Types ---
 export interface OnboardingData {
@@ -46,18 +48,6 @@ export interface AnalyticsData {
   campaignsCreated: number;
 }
 
-// --- Supabase Client ---
-const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL');
-const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
-
-export const supabase = (supabaseUrl && supabaseKey) 
-  ? createClient(supabaseUrl, supabaseKey) 
-  : null;
-
-if (!supabase) {
-  console.warn("Supabase credentials missing or invalid. Running in LocalStorage Demo Mode.");
-}
-
 // --- Initial Mock Data (Fallback) ---
 const INITIAL_LEADS: Lead[] = [
   { id: '1', name: 'John Doe', email: 'john@example.com', status: 'New Lead', value: '$2,500', source: 'Website', createdAt: Date.now() },
@@ -82,7 +72,7 @@ export const mockDb = {
   getLeads: async (): Promise<Lead[]> => {
     if (supabase) {
         const { data } = await supabase.from('leads').select('*');
-        return data ? data.map(d => ({ ...d, createdAt: new Date(d.created_at).getTime() })) : [];
+        return data ? data.map((d: any) => ({ ...d, createdAt: new Date(d.created_at).getTime() })) : [];
     }
     const stored = localStorage.getItem('kb_leads');
     if (!stored) {
@@ -146,7 +136,7 @@ export const mockDb = {
             *,
             steps:workflow_steps(*)
         `);
-        return data ? data.map(w => ({
+        return data ? data.map((w: any) => ({
             id: w.id,
             name: w.name,
             description: w.description,
@@ -206,7 +196,7 @@ export const mockDb = {
             status: wf.status,
             type: wf.type,
             createdAt: new Date(wf.created_at).getTime(),
-            steps: stepsData!.map(s => ({
+            steps: stepsData!.map((s: any) => ({
                 id: s.id,
                 workflowId: s.workflow_id,
                 order: s.step_order,
@@ -276,7 +266,7 @@ export const mockDb = {
             workflowId,
             status: run.status,
             startedAt: new Date(run.started_at).getTime(),
-            stepRuns: srData!.map(sr => ({
+            stepRuns: srData!.map((sr: any) => ({
                 id: sr.id,
                 runId: sr.workflow_run_id,
                 stepId: sr.workflow_step_id,
@@ -365,6 +355,7 @@ export const mockDb = {
         if (updates.startedAt) payload.started_at = new Date(updates.startedAt).toISOString();
         if (updates.finishedAt) payload.finished_at = new Date(updates.finishedAt).toISOString();
         
+        // Supabase needs the ID of the step run
         const { data } = await supabase.from('workflow_step_runs')
             .select('id')
             .eq('workflow_run_id', runId)
