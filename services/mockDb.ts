@@ -46,22 +46,17 @@ export interface AnalyticsData {
   campaignsCreated: number;
 }
 
-// --- Helper to clean env vars ---
-const cleanVar = (val: string | undefined) => val ? val.replace(/"/g, '') : undefined;
-
 // --- Supabase Client ---
-const supabaseUrl = cleanVar(getEnv('VITE_SUPABASE_URL'));
-const supabaseKey = cleanVar(getEnv('VITE_SUPABASE_ANON_KEY'));
-
-// Explicit logging for debugging in production console
-console.log("Database Connection Configured:", !!supabaseUrl);
+// Using robust getEnv helper to avoid "undefined" errors
+const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL');
+const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
 export const supabase = (supabaseUrl && supabaseKey) 
   ? createClient(supabaseUrl, supabaseKey) 
   : null;
 
 if (!supabase) {
-  console.warn("⚠️ Running in Mock/Demo Mode. (Missing VITE_SUPABASE_URL or Key)");
+  console.warn("Supabase credentials missing or invalid. Running in LocalStorage Demo Mode.");
 }
 
 // --- Initial Mock Data (Fallback) ---
