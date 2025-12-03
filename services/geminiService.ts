@@ -2,23 +2,17 @@ import { GoogleGenAI } from "@google/genai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
 import { getEnv } from '../utils/env';
 
-// Helper to clean key
-const cleanKey = (key: string | undefined) => {
-    if (!key) return '';
-    return key.replace(/["']/g, '').trim();
-};
-
-const rawKey = getEnv('API_KEY');
-const apiKey = cleanKey(rawKey);
-
+const apiKey = getEnv('API_KEY');
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+// Ensure we use a stable model version
 const MODEL_NAME = 'gemini-2.5-flash';
 
 if (!ai) {
-  console.warn("⚠️ Gemini API Key missing. App is running in Mock/Demo Mode.");
+  console.warn("⚠️ Gemini API Key missing or invalid. App is running in Mock/Demo Mode.");
+} else {
+  console.log("✅ Gemini API initialized successfully.");
 }
 
-// ... rest of the file remains exactly the same ...
 // Helper to clean JSON
 const cleanAndParseJSON = (text: string) => {
   try {
