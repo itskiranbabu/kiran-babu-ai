@@ -24,9 +24,12 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1600,
     },
     define: {
-      'process.env.API_KEY': JSON.stringify(apiKey),
-      'process.env.VITE_SUPABASE_URL': JSON.stringify(sbUrl),
-      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(sbKey),
+      // INJECT GLOBALLY ACCESSIBLE OBJECT
+      'window.__ENV__': {
+        API_KEY: apiKey,
+        VITE_SUPABASE_URL: sbUrl,
+        VITE_SUPABASE_ANON_KEY: sbKey,
+      },
     },
   };
 });
