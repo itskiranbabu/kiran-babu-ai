@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import Layout from './components/Layout';
 import CopilotLayout from './components/CopilotLayout';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Services from './pages/Services';
 import Products from './pages/Products';
@@ -39,52 +40,54 @@ import Onboarding from './pages/Onboarding';
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <Router>
-            <ScrollToTop />
-            <Routes>
-              {/* Main Site Layout */}
-              <Route element={<Layout><Outlet /></Layout>}>
-                <Route path="/" element={<Home />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/playground" element={<Playground />} />
-                <Route path="/book" element={<BookCall />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/login" element={<Login />} />
-                
-                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
-                <Route path="/repurpose" element={<ProtectedRoute><Repurpose /></ProtectedRoute>} />
-                <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                <Route path="/funnels" element={<ProtectedRoute><Funnels /></ProtectedRoute>} />
-                <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
-                <Route path="/client-portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
-                <Route path="/ai-avatar" element={<ProtectedRoute><AIAvatar /></ProtectedRoute>} />
-                <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
-                
-                {/* Copilot Suite with Sub-Layout */}
-                <Route path="/copilot" element={<ProtectedRoute><CopilotLayout /></ProtectedRoute>}>
-                    <Route index element={<Copilot />} />
-                    <Route path="workflows" element={<Workflows />} />
-                    <Route path="workflows/:id" element={<WorkflowDetail />} />
-                    <Route path="runs/:id" element={<RunViewer />} />
-                </Route>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <Router>
+              <ScrollToTop />
+              <Routes>
+                {/* Main Site Layout */}
+                <Route element={<Layout><Outlet /></Layout>}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/products" element={<Products />} />
+                  <Route path="/playground" element={<Playground />} />
+                  <Route path="/book" element={<BookCall />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/login" element={<Login />} />
+                  
+                  <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+                  <Route path="/repurpose" element={<ProtectedRoute><Repurpose /></ProtectedRoute>} />
+                  <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+                  <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                  <Route path="/funnels" element={<ProtectedRoute><Funnels /></ProtectedRoute>} />
+                  <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
+                  <Route path="/client-portal" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
+                  <Route path="/ai-avatar" element={<ProtectedRoute><AIAvatar /></ProtectedRoute>} />
+                  <Route path="/templates" element={<ProtectedRoute><Templates /></ProtectedRoute>} />
+                  
+                  {/* Copilot Suite with Sub-Layout */}
+                  <Route path="/copilot" element={<ProtectedRoute><CopilotLayout /></ProtectedRoute>}>
+                      <Route index element={<Copilot />} />
+                      <Route path="workflows" element={<Workflows />} />
+                      <Route path="workflows/:id" element={<WorkflowDetail />} />
+                      <Route path="runs/:id" element={<RunViewer />} />
+                  </Route>
 
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-            <CookieConsent />
-          </Router>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+              <CookieConsent />
+            </Router>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
