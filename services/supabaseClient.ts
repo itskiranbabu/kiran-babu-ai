@@ -5,17 +5,13 @@ import { getEnv } from '../utils/env';
 const supabaseUrl = getEnv('VITE_SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL');
 const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY') || getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
-// Safe debug logging
-try {
-    // @ts-ignore
-    if (import.meta.env && import.meta.env.DEV) {
-        console.log("Supabase Config Check:", {
-            URL_Found: !!supabaseUrl,
-            Key_Found: !!supabaseKey
-        });
-    }
-} catch (e) {
-    // Ignore error in non-Vite environments
+// Debug logging to help diagnose connection issues in production
+// @ts-ignore
+if (import.meta.env && import.meta.env.DEV) {
+    console.log("Supabase Config Check:", {
+        URL_Found: !!supabaseUrl,
+        Key_Found: !!supabaseKey
+    });
 }
 
 export const supabase = (supabaseUrl && supabaseKey) 
