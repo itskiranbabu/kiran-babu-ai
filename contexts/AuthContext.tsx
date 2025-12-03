@@ -16,6 +16,7 @@ interface AuthContextType {
   signup: (email: string, password?: string, name?: string) => Promise<void>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => Promise<void>;
+  demoLogin: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,6 +116,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  // --- Demo Login (No Supabase) ---
+  const demoLogin = async () => {
+    setIsLoading(true);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const demoUser: User = {
+        id: 'demo-' + Date.now(),
+        name: 'Demo Admin',
+        email: 'demo@keyspark.ai',
+        avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&q=80',
+        role: 'admin'
+      };
+      
+      setUser(demoUser);
+      localStorage.setItem('kb_user', JSON.stringify(demoUser));
+      console.log('✅ Demo login successful');
+    } catch (err: any) {
+      console.error('Demo login error:', err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // --- Login Logic ---
   const login = async (email: string, password?: string) => {
     setIsLoading(true);
@@ -174,7 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // --- Signup Logic ---
   const signup = async (email: string, password?: string, name?: string) => {
     if (!isSupabaseAvailable() || !supabase || !password) {
-      throw new Error('Signup requires Supabase connection');
+      throw new Error('Signup requires Supabase connection and password');
     }
     
     setIsLoading(true);
@@ -236,7 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, updateProfile, demoLogin }}>
       {children}
     </AuthContext.Provider>
   );
