@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -76,7 +77,7 @@ const Login: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your Name"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl px-4 py-3 text-white focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl px-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
                 />
               </div>
             )}
@@ -90,7 +91,7 @@ const Login: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-white focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
                 />
               </div>
             </div>
@@ -104,7 +105,7 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-white focus:border-brand-500 focus:outline-none transition-all"
+                  className="w-full bg-dark-bg/50 border border-dark-border rounded-xl pl-12 pr-4 py-3 text-dark-text focus:border-brand-500 focus:outline-none transition-all"
                 />
               </div>
             </div>
