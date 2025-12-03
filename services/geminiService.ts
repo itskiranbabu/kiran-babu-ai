@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
 import { getEnv } from '../utils/env';
 
-// Helper to strip quotes if Vercel injected them
+// Helper to clean key
 const cleanKey = (key: string | undefined) => {
     if (!key) return '';
     return key.replace(/["']/g, '').trim();
@@ -11,18 +11,11 @@ const cleanKey = (key: string | undefined) => {
 const rawKey = getEnv('API_KEY');
 const apiKey = cleanKey(rawKey);
 
-// Debug Log (Masked)
-if (apiKey) {
-    console.log(`✅ Gemini API Key found (Length: ${apiKey.length}). Starts with: ${apiKey.substring(0, 4)}...`);
-} else {
-    console.warn("❌ Gemini API Key NOT found in process.env or import.meta.env");
-}
-
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 const MODEL_NAME = 'gemini-2.5-flash';
 
 if (!ai) {
-  console.warn("⚠️ App is running in Mock/Demo Mode.");
+  console.warn("⚠️ Gemini API Key missing. App is running in Mock/Demo Mode.");
 }
 
 // ... rest of the file remains exactly the same ...
