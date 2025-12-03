@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1600,
       rollupOptions: {
         output: {
+          // Force unique filenames to prevent caching
           entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
           chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
           assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`,
@@ -31,12 +32,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      // INJECT GLOBALLY ACCESSIBLE OBJECT
-      'window.__ENV__': {
-        API_KEY: apiKey,
-        VITE_SUPABASE_URL: sbUrl,
-        VITE_SUPABASE_ANON_KEY: sbKey,
-      },
+      // Standard process.env injection
+      'process.env.API_KEY': JSON.stringify(apiKey),
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(sbUrl),
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(sbKey),
     },
   };
 });
