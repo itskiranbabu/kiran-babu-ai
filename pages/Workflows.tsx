@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, MoreVertical, FileText, ArrowRight } from 'lucide-react';
+import { Plus, MoreVertical, FileText, ArrowRight, Loader2 } from 'lucide-react';
 import { mockDb } from '../services/mockDb';
 import { Workflow } from '../types';
 import FadeIn from '../components/FadeIn';
 
 const Workflows: React.FC = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setWorkflows(mockDb.getWorkflows());
+    const fetchData = async () => {
+        const data = await mockDb.getWorkflows();
+        setWorkflows(data);
+        setLoading(false);
+    };
+    fetchData();
   }, []);
 
   return (
@@ -21,7 +27,11 @@ const Workflows: React.FC = () => {
             </Link>
         </div>
 
-        {workflows.length === 0 ? (
+        {loading ? (
+            <div className="flex justify-center items-center py-20">
+                <Loader2 className="animate-spin text-brand-500" size={32} />
+            </div>
+        ) : workflows.length === 0 ? (
             <div className="text-center py-20 border border-dashed border-dark-border rounded-xl">
                 <p className="text-gray-500 mb-4">No active workflows found.</p>
                 <Link to="/copilot" className="text-brand-400 hover:text-white font-bold">Create one with Copilot &rarr;</Link>

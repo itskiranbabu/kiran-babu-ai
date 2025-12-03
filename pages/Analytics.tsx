@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
@@ -7,21 +6,25 @@ import { BarChart, Activity, Users, DollarSign, TrendingUp, Globe } from 'lucide
 import { mockDb, AnalyticsData } from '../services/mockDb';
 
 const Analytics: React.FC = () => {
-  const [data, setData] = useState<AnalyticsData>(mockDb.getAnalytics());
+  const [data, setData] = useState<AnalyticsData | null>(null);
   const [liveVisitors, setLiveVisitors] = useState(14);
 
   useEffect(() => {
+    const fetchData = async () => {
+        const result = await mockDb.getAnalytics();
+        setData(result);
+    };
+    fetchData();
+
     // Simulate live data updates
     const interval = setInterval(() => {
       setLiveVisitors(prev => Math.max(5, prev + Math.floor(Math.random() * 3) - 1));
-      setData(prev => ({
-        ...prev,
-        pageViews: prev.pageViews + 1,
-      }));
     }, 3000);
 
     return () => clearInterval(interval);
   }, []);
+
+  if (!data) return <div className="p-8">Loading analytics...</div>;
 
   const stats = [
     { label: 'Total Revenue', value: `$${data.revenue.toLocaleString()}`, change: '+12.5%', icon: DollarSign, color: 'text-green-400', bg: 'bg-green-400/10' },

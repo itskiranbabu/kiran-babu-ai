@@ -85,7 +85,7 @@ export const PRODUCTS: Product[] = [
     description: 'The complete Notion system to manage your SaaS operations and growth.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/300?grayscale',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/crcrq',
     featured: true
   },
@@ -95,7 +95,7 @@ export const PRODUCTS: Product[] = [
     description: 'Manage clients, projects, and invoices in one unified dashboard.',
     price: '$29',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/310?grayscale',
+    image: 'https://images.unsplash.com/photo-1499750310159-52f0f83ad497?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/zkpdwi',
     featured: true
   },
@@ -105,7 +105,7 @@ export const PRODUCTS: Product[] = [
     description: '100+ Pro Templates for ChatGPT, Claude & Midjourney.',
     price: '$49',
     type: ProductType.PROMPT_PACK,
-    image: 'https://picsum.photos/400/307?grayscale',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/shlhrb',
     featured: true
   },
@@ -115,7 +115,7 @@ export const PRODUCTS: Product[] = [
     description: 'The ultimate planner for YouTube, TikTok & Instagram content.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/312?grayscale',
+    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/xxstk',
     featured: true
   },
@@ -125,7 +125,7 @@ export const PRODUCTS: Product[] = [
     description: 'Streamline your content pipeline across all major platforms.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/311?grayscale',
+    image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/ynnxj'
   },
   {
@@ -134,7 +134,7 @@ export const PRODUCTS: Product[] = [
     description: 'Goal tracking, KPI dashboards, and daily task management.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/313?grayscale',
+    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/hquiq'
   },
   {
@@ -143,7 +143,7 @@ export const PRODUCTS: Product[] = [
     description: 'Track properties, tenants, and income with ease.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/301?grayscale',
+    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/dwicxr'
   },
   {
@@ -152,7 +152,7 @@ export const PRODUCTS: Product[] = [
     description: 'A comprehensive event management system for your big day.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/302?grayscale',
+    image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/tvpwgvp'
   },
   {
@@ -161,7 +161,7 @@ export const PRODUCTS: Product[] = [
     description: 'Take control of your budget, expenses, and savings goals.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/303?grayscale',
+    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/haebsi'
   },
   {
@@ -170,7 +170,7 @@ export const PRODUCTS: Product[] = [
     description: 'Organize applications, interviews, and networking contacts.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/304?grayscale',
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/knvwn'
   },
   {
@@ -179,7 +179,7 @@ export const PRODUCTS: Product[] = [
     description: 'Plan weekly meals and organize your favorite recipes.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/305?grayscale',
+    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/lcstdth'
   },
   {
@@ -188,7 +188,7 @@ export const PRODUCTS: Product[] = [
     description: 'Track workouts, nutrition, and wellness habits.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/306?grayscale',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/armdis'
   },
   {
@@ -197,7 +197,7 @@ export const PRODUCTS: Product[] = [
     description: 'For comprehensive life and goal management.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/308?grayscale',
+    image: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/skjhz'
   },
   {
@@ -206,7 +206,7 @@ export const PRODUCTS: Product[] = [
     description: 'The essential tool for academic organization and grades.',
     price: '$0+',
     type: ProductType.NOTION_TEMPLATE,
-    image: 'https://picsum.photos/400/309?grayscale',
+    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/apvhdn'
   }
 ];
@@ -218,7 +218,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     title: 'Automated Lead Gen System',
     category: 'Automation',
     result: '+40% Leads / Month',
-    image: 'https://picsum.photos/600/400?grayscale&blur=2'
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'c2',
@@ -226,7 +226,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     title: 'Rebranding & Website Overhaul',
     category: 'Web Design',
     result: '2x Conversion Rate',
-    image: 'https://picsum.photos/600/401?grayscale&blur=2'
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'c3',
@@ -234,7 +234,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     title: 'Short-Form Content Strategy',
     category: 'Content',
     result: '100k Views in 30 Days',
-    image: 'https://picsum.photos/600/402?grayscale&blur=2'
+    image: 'https://images.unsplash.com/photo-1579389083078-4e7018379f7e?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -244,21 +244,21 @@ export const TESTIMONIALS = [
     name: 'Alex Rivera',
     role: 'Digital Creator',
     text: "KeySpark AI's Notion system completely saved my sanity. I went from scattered notes to a fully automated content machine. Worth every penny.",
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d'
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80'
   },
   {
     id: 't2',
     name: 'Sarah Chen',
     role: 'Startup Founder',
     text: "The website redesign was flawless. It's fast, looks premium, and we've seen a 30% increase in demo bookings since launch.",
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d'
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80'
   },
   {
     id: 't3',
     name: 'Marcus Johnson',
     role: 'Fitness Coach',
     text: "The AI prompt pack is a game changer. I used to spend hours on captions, now I generate a week's worth of content in 15 minutes.",
-    avatar: 'https://i.pravatar.cc/150?u=a04258114e29026302d'
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80'
   }
 ];
 

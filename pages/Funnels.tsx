@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
@@ -13,7 +12,11 @@ const Funnels: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    setFunnels(mockDb.getFunnels());
+    const fetchData = async () => {
+        const data = await mockDb.getFunnels();
+        setFunnels(data);
+    };
+    fetchData();
   }, []);
 
   const handleGenerate = async () => {
@@ -29,7 +32,7 @@ const Funnels: React.FC = () => {
         "Sales Page: Urgency + Social Proof"
     ];
     
-    const newFunnel = mockDb.addFunnel({ name: `${niche} Funnel`, niche, goal, steps });
+    const newFunnel = await mockDb.addFunnel({ name: `${niche} Funnel`, niche, goal, steps });
     setFunnels([...funnels, newFunnel]);
     setIsGenerating(false);
   };

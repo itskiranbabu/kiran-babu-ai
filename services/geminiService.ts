@@ -1,8 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
+import { getEnv } from '../utils/env';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+const apiKey = getEnv('API_KEY');
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 const MODEL_NAME = 'gemini-2.5-flash';
+
+if (!ai) {
+  console.warn("Gemini API Key missing. Running in Mock Mode.");
+}
 
 // Helper to clean JSON
 const cleanAndParseJSON = (text: string) => {
@@ -23,10 +29,11 @@ const cleanAndParseJSON = (text: string) => {
 
 // --- PLANNER AGENT ---
 export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | null> => {
-    if (!process.env.API_KEY) {
+    if (!ai) {
+        await new Promise(r => setTimeout(r, 1500));
         // Mock Plan
         return {
-            summary: "A simplified launch campaign for your product.",
+            summary: "A simplified launch campaign for your product (Mock Plan).",
             steps: [
                 { title: "Generate Teaser Post", type: "generate_content", description: "Create excitement on LinkedIn", prompt: "Write a LinkedIn post teasing a new launch for " + goal },
                 { title: "Wait 1 Day", type: "wait", description: "Wait for engagement" },
@@ -70,7 +77,7 @@ export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | 
 
 // --- EXECUTOR AGENT ---
 export const executeWorkflowStep = async (step: WorkflowStep, context: any = {}): Promise<string> => {
-    if (!process.env.API_KEY) {
+    if (!ai) {
         await new Promise(r => setTimeout(r, 1000));
         return `[Mock Output] Executed ${step.title}. Result: Success.`;
     }
@@ -105,7 +112,8 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
 
 // --- Content Repurposing ---
 export const repurposeContent = async (text: string, tone: string) => {
-  if (!process.env.API_KEY) {
+  if (!ai) {
+    await new Promise(r => setTimeout(r, 2000));
     return {
       instagram: {
         script: "🔥 STOP SCROLLING! Here is how to automate your content...\n\n1. Use Templates\n2. Batch Create\n3. Use AI",
@@ -155,7 +163,7 @@ export const repurposeContent = async (text: string, tone: string) => {
 
 // --- Magic Rewrite / Refine ---
 export const refineContent = async (text: string, platform: string, instruction: string) => {
-    if (!process.env.API_KEY) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
+    if (!ai) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
 
     const prompt = `
         Refine the following ${platform} content.
@@ -178,7 +186,7 @@ export const refineContent = async (text: string, platform: string, instruction:
 
 // --- Campaign Copilot ---
 export const generateCampaign = async (goal: string) => {
-  if (!process.env.API_KEY) {
+  if (!ai) {
     return {
       campaign_summary: "Launch a comprehensive 7-day sprint focusing on value-first education followed by a scarcity offer.",
       target_audience: "Creators and Solopreneurs earning $0-$5k/mo",
@@ -220,7 +228,7 @@ export const generateCampaign = async (goal: string) => {
 
 // --- Lead Insight ---
 export const analyzeLead = async (leadData: any) => {
-  if (!process.env.API_KEY) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
+  if (!ai) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
 
   const prompt = `
     Analyze this lead for a creator agency:
@@ -245,7 +253,7 @@ export const analyzeLead = async (leadData: any) => {
 
 // --- Onboarding Plan ---
 export const generateOnboardingPlan = async (data: any) => {
-  if (!process.env.API_KEY) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
+  if (!ai) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
   
   const prompt = `
     Create a high-level 90-day growth plan for a ${data.type} creator.
@@ -268,7 +276,7 @@ export const generateOnboardingPlan = async (data: any) => {
 
 // --- Content Ideas ---
 export const generateContentIdeas = async (niche: string, platform: string, topic: string) => {
-    if (!process.env.API_KEY) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
+    if (!ai) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
     const prompt = `Generate 3 viral hooks for ${niche} on ${platform} about ${topic}. JSON array of strings.`;
     
     try {
@@ -282,7 +290,7 @@ export const generateContentIdeas = async (niche: string, platform: string, topi
 };
 
 export const createChatSession = () => {
-    if (!process.env.API_KEY) return new MockChat();
+    if (!ai) return new MockChat();
     return ai.chats.create({
         model: 'gemini-3-pro-preview',
         config: { systemInstruction: "You are KeySpark AI assistant." },

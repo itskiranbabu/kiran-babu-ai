@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Save, ArrowLeft, Settings, Zap } from 'lucide-react';
+import { Play, Save, ArrowLeft, Settings, Zap, Loader2 } from 'lucide-react';
 import { mockDb } from '../services/mockDb';
 import { Workflow } from '../types';
 
@@ -8,21 +8,27 @@ const WorkflowDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
-        const wf = mockDb.getWorkflowById(id);
-        if (wf) setWorkflow(wf);
+        const fetchWf = async () => {
+            const wf = await mockDb.getWorkflowById(id);
+            if (wf) setWorkflow(wf);
+            setLoading(false);
+        };
+        fetchWf();
     }
   }, [id]);
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (!workflow) return;
-    const run = mockDb.createRun(workflow.id);
+    const run = await mockDb.createRun(workflow.id);
     navigate(`/copilot/runs/${run.id}`);
   };
 
-  if (!workflow) return <div className="p-8 text-white">Loading...</div>;
+  if (loading) return <div className="p-8 text-white flex justify-center"><Loader2 className="animate-spin text-brand-500" /></div>;
+  if (!workflow) return <div className="p-8 text-white">Workflow not found.</div>;
 
   return (
     <div className="flex h-full">

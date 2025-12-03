@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Terminal, CheckCircle, Circle, Loader2, ArrowLeft } from 'lucide-react';
-import { mockDb } from '../services/mockDb';
+import { mockDb, supabase } from '../services/mockDb';
 import { executeWorkflowStep } from '../services/geminiService';
 import { WorkflowRun, Workflow } from '../types';
 
@@ -12,18 +12,39 @@ const RunViewer: React.FC = () => {
   const [logs, setLogs] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Poll for run data
+  // Poll for run data & Realtime Subscription
   useEffect(() => {
     if (!id) return;
-    const r = mockDb.getRunById(id);
-    if (r) {
-        setRun(r);
-        const wf = mockDb.getWorkflowById(r.workflowId);
-        if (wf) setWorkflow(wf);
+
+    const fetchRun = async () => {
+        const r = await mockDb.getRunById(id);
+        if (r) {
+            setRun(r);
+            const wf = await mockDb.getWorkflowById(r.workflowId);
+            if (wf) setWorkflow(wf);
+        }
+    };
+    fetchRun();
+
+    // Supabase Realtime Subscription
+    let channel: any;
+    if (supabase) {
+        channel = supabase.channel(`run-${id}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'workflow_step_runs' }, () => {
+                fetchRun(); // Refresh on any step update
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'workflow_runs' }, () => {
+                fetchRun(); 
+            })
+            .subscribe();
     }
+
+    return () => {
+        if (channel) supabase!.removeChannel(channel);
+    };
   }, [id]);
 
-  // Execution Engine Simulation
+  // Execution Engine Simulation (Worker)
   useEffect(() => {
     if (!run || !workflow || run.status !== 'running') return;
 
@@ -33,23 +54,26 @@ const RunViewer: React.FC = () => {
         
         if (!nextStepRun) {
             // All done
-            mockDb.updateRun(run.id, { status: 'completed', finishedAt: Date.now() });
-            setRun(prev => prev ? { ...prev, status: 'completed' } : null);
+            await mockDb.updateRun(run.id, { status: 'completed', finishedAt: Date.now() });
+            const r = await mockDb.getRunById(run.id);
+            setRun(r || null);
             return;
         }
 
         // 1. Mark as running
-        mockDb.updateStepRun(run.id, nextStepRun.stepId, { status: 'running', startedAt: Date.now() });
-        setRun(mockDb.getRunById(run.id)!); // Force update state
+        await mockDb.updateStepRun(run.id, nextStepRun.stepId, { status: 'running', startedAt: Date.now() });
+        setRun(await mockDb.getRunById(run.id) || null); // Force update state
         addLog(`> Starting Step: ${workflow.steps.find(s => s.id === nextStepRun.stepId)?.title}...`);
 
-        // 2. Execute
+        // 2. Execute (with delay to simulate work)
         const stepDef = workflow.steps.find(s => s.id === nextStepRun.stepId);
         if (stepDef) {
+            // Artificial delay for UX
+            await new Promise(r => setTimeout(r, 1000));
             const output = await executeWorkflowStep(stepDef);
             
             // 3. Mark success
-            mockDb.updateStepRun(run.id, nextStepRun.stepId, { 
+            await mockDb.updateStepRun(run.id, nextStepRun.stepId, { 
                 status: 'completed', 
                 finishedAt: Date.now(),
                 output: output
@@ -59,10 +83,13 @@ const RunViewer: React.FC = () => {
         }
 
         // 4. Update local state to trigger next loop
-        setRun(mockDb.getRunById(run.id)!);
+        setRun(await mockDb.getRunById(run.id) || null);
     };
 
-    const timer = setTimeout(executeNextStep, 1500); // Artificial delay for effect
+    // Only run this engine if we are in "Demo Mode" (no backend worker) or to simulate it
+    // In a real app with Supabase Functions, this hook wouldn't exist here.
+    // For this client-side demo, we use a timeout loop.
+    const timer = setTimeout(executeNextStep, 500); 
     return () => clearTimeout(timer);
   }, [run, workflow]);
 

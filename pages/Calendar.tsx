@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
@@ -7,24 +6,30 @@ import { Plus, CheckCircle, X } from 'lucide-react';
 import { mockDb, CalendarEvent } from '../services/mockDb';
 
 const Calendar: React.FC = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>(mockDb.getEvents());
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [addingDate, setAddingDate] = useState<string | null>(null);
   const [newEventTitle, setNewEventTitle] = useState('');
 
+  useEffect(() => {
+    const fetchData = async () => {
+        const data = await mockDb.getEvents();
+        setEvents(data);
+    };
+    fetchData();
+  }, []);
+
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   
-  // Mock dates for a visual week view starting from today adjusted to start on Monday or just next 7 days
   const currentWeek = Array.from({length: 7}, (_, i) => {
     const d = new Date();
-    // Start list from today
     d.setDate(d.getDate() + i);
     return d;
   });
 
-  const handleAddSubmit = (e: React.FormEvent, dateStr: string) => {
+  const handleAddSubmit = async (e: React.FormEvent, dateStr: string) => {
       e.preventDefault();
       if (newEventTitle.trim()) {
-        const evt = mockDb.addEvent({ date: dateStr, title: newEventTitle, platform: 'Instagram', status: 'Idea' });
+        const evt = await mockDb.addEvent({ date: dateStr, title: newEventTitle, platform: 'Instagram', status: 'Idea' });
         setEvents([...events, evt]);
         setNewEventTitle('');
         setAddingDate(null);

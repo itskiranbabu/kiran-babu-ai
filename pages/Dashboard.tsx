@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Sparkles, 
@@ -11,9 +11,23 @@ import {
 import SEO from '../components/SEO';
 import ContentGenerator from '../components/ContentGenerator';
 import FadeIn from '../components/FadeIn';
+import { mockDb } from '../services/mockDb';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'ai-studio' | 'settings'>('ai-studio');
+  const [stats, setStats] = useState({ ideasGenerated: 0, savedPrompts: 0 });
+  const [loadingStats, setLoadingStats] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+        const s = await mockDb.getUserStats();
+        setStats(s);
+        setLoadingStats(false);
+    };
+    fetchStats();
+  }, []);
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -33,11 +47,11 @@ const Dashboard: React.FC = () => {
             <FadeIn direction="none">
               <div className="bg-dark-card border border-dark-border rounded-xl p-4 sticky top-24">
                 <div className="flex items-center gap-3 p-4 mb-6 border-b border-dark-border/50">
-                  <div className="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
-                    KB
+                  <div className="w-10 h-10 rounded-full bg-brand-600 border border-brand-400 overflow-hidden">
+                    {user?.avatar && <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />}
                   </div>
                   <div>
-                    <h3 className="text-white font-medium text-sm">Kiran Babu</h3>
+                    <h3 className="text-white font-medium text-sm">{user?.name || 'Creator'}</h3>
                     <p className="text-xs text-gray-500">Pro Plan</p>
                   </div>
                 </div>
@@ -73,7 +87,6 @@ const Dashboard: React.FC = () => {
           {/* Main Content Area */}
           <div className="lg:col-span-3">
              <FadeIn delay={100}>
-                {/* Header for Mobile/Tablet context mostly, or just general page title */}
                 <div className="flex items-center justify-between mb-8">
                   <h1 className="text-2xl font-bold text-white">
                     {menuItems.find(i => i.id === activeTab)?.label}
@@ -83,22 +96,18 @@ const Dashboard: React.FC = () => {
                       <Bell size={20} />
                       <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                     </button>
-                    <button className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/5">
-                      <User size={20} />
-                    </button>
                   </div>
                 </div>
 
-                {/* Tab Content */}
                 {activeTab === 'overview' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                      <div className="bg-dark-card border border-dark-border rounded-xl p-6">
                         <p className="text-gray-400 text-sm mb-1">Ideas Generated</p>
-                        <p className="text-3xl font-bold text-white">124</p>
+                        <p className="text-3xl font-bold text-white">{loadingStats ? '...' : stats.ideasGenerated}</p>
                      </div>
                      <div className="bg-dark-card border border-dark-border rounded-xl p-6">
                         <p className="text-gray-400 text-sm mb-1">Saved Prompts</p>
-                        <p className="text-3xl font-bold text-white">12</p>
+                        <p className="text-3xl font-bold text-white">{loadingStats ? '...' : stats.savedPrompts}</p>
                      </div>
                      <div className="bg-dark-card border border-dark-border rounded-xl p-6">
                         <p className="text-gray-400 text-sm mb-1">Plan Usage</p>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import SectionHeader from '../components/SectionHeader';
 import FadeIn from '../components/FadeIn';
@@ -15,18 +14,16 @@ const Repurpose: React.FC = () => {
   const [output, setOutput] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('linkedin');
   const { addToast } = useToast();
-  
-  // Magic Rewrite State
   const [isRefining, setIsRefining] = useState(false);
 
   const handleGenerate = async () => {
     if (!inputText) return;
     setIsGenerating(true);
-    setOutput(null); // Clear previous
+    setOutput(null); 
     const result = await repurposeContent(inputText, tone);
     if (result) {
         setOutput(result);
-        mockDb.incrementUserStat('ideasGenerated');
+        await mockDb.incrementUserStat('ideasGenerated');
     }
     setIsGenerating(false);
   };
@@ -42,11 +39,8 @@ const Repurpose: React.FC = () => {
     setIsRefining(true);
     
     let currentContent = '';
-    // Determine content based on tab
     if (activeTab === 'linkedin') currentContent = output.linkedin;
     else if (activeTab === 'instagram') {
-        // If object, refine just the caption for simplicity, or we could refine the whole object (complex)
-        // For simplicity in this demo, we'll stringify or just refine the caption if it's an object
         currentContent = typeof output.instagram === 'string' ? output.instagram : output.instagram.caption;
     }
     else if (activeTab === 'twitter') currentContent = Array.isArray(output.twitter) ? output.twitter.join('\n\n') : output.twitter;
@@ -55,7 +49,6 @@ const Repurpose: React.FC = () => {
     if (currentContent) {
         const refined = await refineContent(currentContent, activeTab, instruction);
         
-        // Update local state based on active tab
         const newOutput = { ...output };
         if (activeTab === 'linkedin') newOutput.linkedin = refined;
         else if (activeTab === 'instagram') {
@@ -65,7 +58,7 @@ const Repurpose: React.FC = () => {
                  newOutput.instagram = { ...newOutput.instagram, caption: refined };
              }
         }
-        else if (activeTab === 'twitter') newOutput.twitter = refined.split('\n\n'); // Simple split for thread
+        else if (activeTab === 'twitter') newOutput.twitter = refined.split('\n\n'); 
         else if (activeTab === 'youtube') newOutput.youtube.description = refined;
         
         setOutput(newOutput);

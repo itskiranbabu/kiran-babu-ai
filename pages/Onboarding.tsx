@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FadeIn from '../components/FadeIn';
@@ -36,7 +35,7 @@ const Onboarding: React.FC = () => {
     const plan = await generateOnboardingPlan(formData);
     
     // Save to DB
-    mockDb.saveOnboarding({
+    await mockDb.saveOnboarding({
       completed: true,
       ...formData,
       plan: plan || ''

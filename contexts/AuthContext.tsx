@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -14,6 +13,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string) => Promise<void>;
   logout: () => void;
+  updateProfile: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,11 +36,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Extract name from email for demo purposes
+    const derivedName = email.split('@')[0].replace(/[0-9]/g, '');
+    const formattedName = derivedName.charAt(0).toUpperCase() + derivedName.slice(1);
+
     const newUser: User = {
       id: 'u1',
-      name: 'Kiran Babu', // In a real app this would come from the provider
+      name: formattedName || 'Creator', 
       email: email,
-      avatar: 'https://github.com/itskiranbabu.png',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
       role: 'admin'
     };
     
@@ -54,8 +58,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('kb_user');
   };
 
+  const updateProfile = (updates: Partial<User>) => {
+      if (user) {
+          const updatedUser = { ...user, ...updates };
+          setUser(updatedUser);
+          localStorage.setItem('kb_user', JSON.stringify(updatedUser));
+      }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

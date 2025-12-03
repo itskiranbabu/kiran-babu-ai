@@ -20,9 +20,9 @@ const Copilot: React.FC = () => {
     setIsProcessing(false);
   };
 
-  const handleCreateWorkflow = () => {
+  const handleCreateWorkflow = async () => {
     if (!plan) return;
-    const workflow = mockDb.createWorkflowFromPlan(input.substring(0, 40) + '...', plan);
+    const workflow = await mockDb.createWorkflowFromPlan(input.substring(0, 40) + '...', plan);
     navigate(`/copilot/workflows/${workflow.id}`);
   };
 
