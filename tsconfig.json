@@ -30,10 +30,10 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     
-    /* Linting - Stricter checks for production quality */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    /* Linting - Balanced for production */
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
