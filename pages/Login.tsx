@@ -12,7 +12,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   
-  const { login, signup, isLoading, demoLogin } = useAuth();
+  const { login, signup, isLoading } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,25 +20,13 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      addToast('Please enter your email', 'error');
-      return;
-    }
-
-    if (!password && isLogin) {
-      addToast('Please enter your password', 'error');
-      return;
-    }
+    if (!email) return;
 
     try {
       if (isLogin) {
         await login(email, password);
         addToast('Welcome back!', 'success');
       } else {
-        if (!password) {
-          addToast('Please enter a password', 'error');
-          return;
-        }
         await signup(email, password, name);
         addToast('Account created! Please check your email.', 'success');
       }
@@ -49,13 +37,14 @@ const Login: React.FC = () => {
   };
 
   const handleDemoLogin = async () => {
+    // Passwordless demo login for portfolio viewers
     try {
-      // Use dedicated demo login that bypasses Supabase
-      await demoLogin();
-      addToast('Welcome to the demo!', 'success');
-      navigate(from, { replace: true });
-    } catch (e: any) {
-      addToast('Demo login failed. Please try again.', 'error');
+        await login('admin@keyspark.ai', 'password');
+        navigate(from, { replace: true });
+    } catch (e) {
+        // Fallback if real auth fails in demo mode
+        console.warn("Demo login fallback");
+        navigate(from, { replace: true });
     }
   };
 
@@ -129,7 +118,7 @@ const Login: React.FC = () => {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full py-4 bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-600/20 transform active:scale-[0.98] mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-gradient-to-r from-[#7B2FF7] to-[#FF9D0A] hover:opacity-90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-600/20 transform active:scale-[0.98] mt-2"
             >
               {isLoading ? <Loader2 className="animate-spin" /> : (
                 <>
@@ -157,7 +146,7 @@ const Login: React.FC = () => {
           <button 
             onClick={handleDemoLogin}
             disabled={isLoading}
-            className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-brand-300 text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-2 group/demo disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-brand-300 text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-2 group/demo"
           >
             <Sparkles size={16} className="text-yellow-400 group-hover/demo:animate-spin" /> 
             Instant Admin Demo

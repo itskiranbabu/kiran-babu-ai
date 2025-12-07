@@ -265,6 +265,26 @@ export const TESTIMONIALS = [
 export const FAQS = [
   {
     question: "What platforms do you build websites on?",
-    answer: "Next.js and React."
+    answer: "I specialize in modern, high-performance web development using Next.js and React. These technologies allow for blazing-fast speeds, SEO optimization, and completely custom designs that drag-and-drop builders like Wix or Squarespace can't match."
+  },
+  {
+    question: "How long does a typical project take?",
+    answer: "Timelines vary by scope. A custom Notion system or simple landing page can be ready in 3-7 days. Full-scale websites and complex automation pipelines typically take 2-4 weeks. We'll agree on a strict timeline during our discovery call."
+  },
+  {
+    question: "Do you offer post-launch support?",
+    answer: "Absolutely. Every custom build comes with 30 days of complimentary support to ensure everything runs smoothly. I also offer monthly maintenance retainers for ongoing updates, content uploads, and system tweaks."
+  },
+  {
+    question: "How does the Notion 'Second Brain' work?",
+    answer: "The Second Brain system is designed to capture ideas, manage projects, and organize resources all in one place. It uses the PARA method (Projects, Areas, Resources, Archives) to ensure you never lose a thought and always know what to work on next."
+  },
+  {
+    question: "Can you automate my specific workflow?",
+    answer: "Yes. I use tools like Make.com (formerly Integromat) and Zapier to connect your favorite apps. Whether it's auto-posting to socials, syncing leads to your CRM, or generating contracts, if it has an API, I can likely automate it."
+  },
+  {
+    question: "What is your refund policy for digital products?",
+    answer: "Due to the digital nature of Notion templates and prompt packs, all sales are final. However, I provide comprehensive video walkthroughs and guides with every purchase to ensure you get maximum value from the product."
   }
 ];

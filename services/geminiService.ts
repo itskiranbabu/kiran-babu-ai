@@ -1,16 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
-import { getEnv } from '../utils/env';
 import { mockDb } from './mockDb';
 
-// Helper to strip quotes if Vercel injected them
-const cleanKey = (key: string | undefined) => {
-    if (!key) return '';
-    return key.replace(/["']/g, '').trim();
-};
-
-const rawKey = getEnv('API_KEY');
-const apiKey = cleanKey(rawKey);
+const apiKey = process.env.API_KEY;
 
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 const MODEL_NAME = 'gemini-2.5-flash';
