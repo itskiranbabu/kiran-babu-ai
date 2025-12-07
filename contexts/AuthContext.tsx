@@ -94,24 +94,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (supabase && password) {
       try {
           // Real Supabase Login
-          const { error } = await supabase.auth.signInWithPassword({ email, password });
-          if (error) throw error;
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          
+          if (error) {
+            // Check if it's an email confirmation error
+            if (error.message.toLowerCase().includes('email not confirmed') || 
+                error.message.toLowerCase().includes('email confirmation')) {
+              throw new Error('Please check your email and confirm your account before logging in. If you didn\'t receive the email, please sign up again.');
+            }
+            throw error;
+          }
+          
+          // Login successful - user state will be updated by onAuthStateChange listener
+          setIsLoading(false);
+          return;
       } catch (err: any) {
           console.error("Supabase Login Failed:", err);
+          setIsLoading(false);
           
           // Graceful fallback if it's a connection issue (status 400/500), but throw on wrong password
           if (err.status >= 500 || err.message?.includes('fetch')) {
               console.warn("Falling back to Demo Mode due to server error");
-              mockLogin(email);
+              await mockLogin(email);
           } else {
-              setIsLoading(false);
-              throw err; // Wrong password, let UI handle it
+              throw err; // Wrong password or email not confirmed, let UI handle it
           }
       }
     } else {
       await mockLogin(email);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const mockLogin = async (email: string) => {
@@ -131,24 +143,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('kb_user', JSON.stringify(newUser));
   };
 
-  // --- Signup Logic ---
+  // --- Signup Logic with Auto-Confirmation ---
   const signup = async (email: string, password?: string, name?: string) => {
     if (!supabase || !password) return; // Only works with real backend
     setIsLoading(true);
     
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
-          avatar_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'
+    try {
+      // Sign up with email confirmation disabled via options
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            full_name: name,
+            avatar_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      // If signup successful and user is created
+      if (data.user) {
+        // Check if email confirmation is required
+        if (data.user.confirmed_at) {
+          // User is auto-confirmed, proceed with login
+          console.log('User auto-confirmed, logging in...');
+        } else {
+          // Email confirmation required - inform user
+          console.log('Email confirmation sent to:', email);
+          throw new Error('Account created! Please check your email to confirm your account before logging in.');
         }
       }
-    });
-    
-    if (error) throw error;
-    setIsLoading(false);
+      
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+      throw err;
+    }
   };
 
   const logout = async () => {
