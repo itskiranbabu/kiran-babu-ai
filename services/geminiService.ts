@@ -1,13 +1,13 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { CopilotPlan, StepRun, WorkflowStep } from '../types';
 import { mockDb } from './mockDb';
 
 const apiKey = process.env.API_KEY;
 
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
-const MODEL_NAME = 'gemini-2.5-flash';
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const MODEL_NAME = 'gemini-2.0-flash-exp';
 
-if (!ai) {
+if (!genAI) {
   console.warn("⚠️ App is running in Mock/Demo Mode.");
 }
 
@@ -38,7 +38,7 @@ const cleanAndParseJSON = (text: string) => {
 
 // --- PLANNER AGENT ---
 export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | null> => {
-    if (!ai) {
+    if (!genAI) {
         await new Promise(r => setTimeout(r, 1500));
         // Mock Plan
         return {
@@ -72,12 +72,10 @@ export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | 
     `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: MODEL_NAME,
-            contents: prompt,
-            config: { responseMimeType: "application/json" }
-        });
-        return cleanAndParseJSON(response.text || '{}');
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return cleanAndParseJSON(response.text() || '{}');
     } catch (e) {
         console.error("Planner Error", e);
         return null;
@@ -86,7 +84,7 @@ export const generateWorkflowPlan = async (goal: string): Promise<CopilotPlan | 
 
 // --- EXECUTOR AGENT ---
 export const executeWorkflowStep = async (step: WorkflowStep, context: any = {}): Promise<string> => {
-    if (!ai) {
+    if (!genAI) {
         await new Promise(r => setTimeout(r, 1000));
         return `[Mock Output] Executed ${step.title}. Result: Success.`;
     }
@@ -102,8 +100,10 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
     if (step.type === 'send_email') {
         // Generate Email Content first
         const prompt = `Write an email subject and body for: ${step.config.promptTemplate || step.description}`;
-        const response = await ai.models.generateContent({ model: MODEL_NAME, contents: prompt });
-        const content = response.text || "No content.";
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const content = response.text() || "No content.";
         
         // "Send" it (Log to DB)
         await mockDb.logEmail("client@example.com", "Automated Email", content);
@@ -118,11 +118,10 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
     `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: MODEL_NAME,
-            contents: prompt,
-        });
-        return response.text || "No output generated.";
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text() || "No output generated.";
     } catch (e) {
         return "Error executing step.";
     }
@@ -130,7 +129,7 @@ export const executeWorkflowStep = async (step: WorkflowStep, context: any = {})
 
 // --- Smart CRM Outreach ---
 export const generateOutreachEmail = async (leadData: any) => {
-    if (!ai) return "Hi [Name], saw your work in [Niche] and would love to connect.";
+    if (!genAI) return "Hi [Name], saw your work in [Niche] and would love to connect.";
 
     const prompt = `
         Draft a cold outreach email for a potential client.
@@ -143,11 +142,10 @@ export const generateOutreachEmail = async (leadData: any) => {
     `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: MODEL_NAME,
-            contents: prompt,
-        });
-        return response.text;
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
     } catch (e) {
         return "Could not generate email.";
     }
@@ -155,7 +153,7 @@ export const generateOutreachEmail = async (leadData: any) => {
 
 // --- Existing Functions ---
 export const repurposeContent = async (text: string, tone: string) => {
-  if (!ai) {
+  if (!genAI) {
     console.log("Mock Mode: Returning default repurpose data.");
     await new Promise(r => setTimeout(r, 2000));
     return {
@@ -196,12 +194,13 @@ export const repurposeContent = async (text: string, tone: string) => {
   `;
 
   try {
-      const response = await ai.models.generateContent({
+      const model = genAI.getGenerativeModel({ 
         model: MODEL_NAME,
-        contents: prompt,
-        config: { responseMimeType: "application/json" }
+        generationConfig: { responseMimeType: "application/json" }
       });
-      return cleanAndParseJSON(response.text || '{}');
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return cleanAndParseJSON(response.text() || '{}');
   } catch (e) {
       console.error("Repurpose Error:", e);
       return null;
@@ -209,7 +208,7 @@ export const repurposeContent = async (text: string, tone: string) => {
 };
 
 export const refineContent = async (text: string, platform: string, instruction: string) => {
-    if (!ai) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
+    if (!genAI) return `(Refined Mock) ${text} [Adjusted: ${instruction}]`;
 
     const prompt = `
         Refine the following ${platform} content.
@@ -220,18 +219,17 @@ export const refineContent = async (text: string, platform: string, instruction:
     `;
 
     try {
-        const response = await ai.models.generateContent({
-            model: MODEL_NAME,
-            contents: prompt,
-        });
-        return response.text?.trim() || text;
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text()?.trim() || text;
     } catch (e) {
         return text;
     }
 };
 
 export const generateCampaign = async (goal: string) => {
-  if (!ai) {
+  if (!genAI) {
     return {
       campaign_summary: "Launch a comprehensive 7-day sprint focusing on value-first education followed by a scarcity offer (Demo Mode).",
       target_audience: "Creators and Solopreneurs earning $0-$5k/mo",
@@ -259,12 +257,13 @@ export const generateCampaign = async (goal: string) => {
   `;
 
   try {
-      const response = await ai.models.generateContent({
+      const model = genAI.getGenerativeModel({ 
         model: MODEL_NAME,
-        contents: prompt,
-        config: { responseMimeType: "application/json" }
+        generationConfig: { responseMimeType: "application/json" }
       });
-      return cleanAndParseJSON(response.text || '{}');
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return cleanAndParseJSON(response.text() || '{}');
   } catch (e) {
       console.error("Campaign Gen Error", e);
       return null;
@@ -272,7 +271,7 @@ export const generateCampaign = async (goal: string) => {
 };
 
 export const analyzeLead = async (leadData: any) => {
-  if (!ai) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
+  if (!genAI) return "This lead shows high intent based on budget. Suggest offering a paid discovery call.";
 
   const prompt = `
     Analyze this lead for a creator agency:
@@ -285,18 +284,17 @@ export const analyzeLead = async (leadData: any) => {
   `;
 
   try {
-      const response = await ai.models.generateContent({
-        model: MODEL_NAME,
-        contents: prompt,
-      });
-      return response.text;
+      const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
   } catch (e) {
       return "Analysis unavailable.";
   }
 };
 
 export const generateOnboardingPlan = async (data: any) => {
-  if (!ai) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
+  if (!genAI) return "Phase 1: Build Audience. Phase 2: Create Offer. Phase 3: Automate.";
   
   const prompt = `
     Create a high-level 90-day growth plan for a ${data.type} creator.
@@ -307,40 +305,43 @@ export const generateOnboardingPlan = async (data: any) => {
   `;
 
   try {
-      const response = await ai.models.generateContent({
-        model: MODEL_NAME,
-        contents: prompt,
-      });
-      return response.text;
+      const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text();
   } catch (e) {
       return "Could not generate plan.";
   }
 };
 
 export const generateContentIdeas = async (niche: string, platform: string, topic: string) => {
-    if (!ai) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
+    if (!genAI) return ["Why you need automation (3 reasons)", "My daily tech stack revealed", "Stop trading time for money"];
     const prompt = `Generate 3 viral hooks for ${niche} on ${platform} about ${topic}. JSON array of strings.`;
     
     try {
-        const response = await ai.models.generateContent({
-            model: MODEL_NAME, contents: prompt, config: { responseMimeType: "application/json" }
+        const model = genAI.getGenerativeModel({ 
+          model: MODEL_NAME,
+          generationConfig: { responseMimeType: "application/json" }
         });
-        return cleanAndParseJSON(response.text || '[]');
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return cleanAndParseJSON(response.text() || '[]');
     } catch(e) {
         return [];
     }
 };
 
 export const createChatSession = () => {
-    if (!ai) return new MockChat();
-    return ai.chats.create({
-        model: 'gemini-3-pro-preview',
-        config: { systemInstruction: "You are KeySpark AI assistant." },
+    if (!genAI) return new MockChat();
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.0-flash-exp',
+      systemInstruction: "You are KeySpark AI assistant."
     });
+    return model.startChat();
 };
 
 class MockChat {
   async sendMessage(props: { message: string }) {
-    return { text: "[Demo Mode] I can't connect to Gemini right now, but I can tell you about our services! Check out the Services page." };
+    return { response: { text: () => "[Demo Mode] I can't connect to Gemini right now, but I can tell you about our services! Check out the Services page." } };
   }
 }
