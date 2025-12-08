@@ -11,6 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import CancellationRefund from "./pages/CancellationRefund";
+import ShippingDelivery from "./pages/ShippingDelivery";
+import ContactUs from "./pages/ContactUs";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { ToastProvider } from "./components/ToastContext";
@@ -165,8 +168,13 @@ const App: React.FC = () => {
                   <Route path="runs/:id" element={<RunViewer />} />
                 </Route>
 
+                {/* Policy Pages - Required for Razorpay */}
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cancellation-refund" element={<CancellationRefund />} />
+                <Route path="/shipping" element={<ShippingDelivery />} />
+                <Route path="/contact" element={<ContactUs />} />
+                
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
