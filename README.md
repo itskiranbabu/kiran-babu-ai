@@ -4,7 +4,7 @@
 
 # KeySpark AI - The Creator OS
 
-A comprehensive AI-powered platform for content creators, featuring workflow automation, content repurposing, CRM, analytics, and more.
+A comprehensive AI-powered platform for content creators, featuring workflow automation, content repurposing, CRM, analytics, and payment integration.
 
 ## 🚀 Quick Start
 
@@ -12,6 +12,7 @@ A comprehensive AI-powered platform for content creators, featuring workflow aut
 - Node.js 18+ 
 - Supabase account (for authentication)
 - Google Gemini API key (for AI features)
+- Razorpay account (for payments - optional)
 
 ### Installation
 
@@ -36,6 +37,10 @@ A comprehensive AI-powered platform for content creators, featuring workflow aut
    # Supabase (for authentication)
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+   
+   # Razorpay (for payments - optional)
+   VITE_RAZORPAY_KEY_ID=rzp_test_XXXXXXXXXX
+   VITE_RAZORPAY_KEY_SECRET=XXXXXXXXXXXXXXXXXX
    ```
 
 4. **Set up Supabase database**
@@ -47,12 +52,22 @@ A comprehensive AI-powered platform for content creators, featuring workflow aut
    - **Disable email confirmation** in Supabase Dashboard → Authentication → Settings
    - See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed instructions
 
-5. **Run the development server**
+5. **Set up Razorpay (Optional)**
+   
+   For payment integration, follow the [Razorpay Setup Guide](./RAZORPAY_SETUP.md)
+   
+   Quick steps:
+   - Complete KYC verification on Razorpay
+   - Add policy page URLs to Razorpay dashboard
+   - Get API keys and add to `.env`
+   - See [RAZORPAY_SETUP.md](./RAZORPAY_SETUP.md) for detailed instructions
+
+6. **Run the development server**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser**
+7. **Open your browser**
    
    Navigate to `http://localhost:5173`
 
@@ -71,9 +86,27 @@ If you encounter **"Email not confirmed"** error when logging in:
 
 3. **Full Guide:** See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for comprehensive instructions
 
+## 💳 Payment Integration
+
+KeySpark AI includes Razorpay payment integration for:
+- Subscription payments
+- One-time product purchases
+- Service bookings
+- Custom payment flows
+
+**All required policy pages are included:**
+- ✅ Terms & Conditions (`/terms`)
+- ✅ Privacy Policy (`/privacy`)
+- ✅ Cancellation & Refund Policy (`/cancellation-refund`)
+- ✅ Shipping & Delivery Policy (`/shipping`)
+- ✅ Contact Us (`/contact`)
+
+See [RAZORPAY_SETUP.md](./RAZORPAY_SETUP.md) for complete integration guide.
+
 ## 📚 Documentation
 
 - **[Supabase Setup Guide](./SUPABASE_SETUP.md)** - Complete authentication setup
+- **[Razorpay Setup Guide](./RAZORPAY_SETUP.md)** - Payment integration guide
 - **[User Confirmation Script](./scripts/confirm-user.sql)** - Manually confirm users
 
 ## 🌟 Features
@@ -85,6 +118,8 @@ If you encounter **"Email not confirmed"** error when logging in:
 - **Calendar Integration** - Schedule and manage content
 - **Templates Library** - Pre-built templates for common tasks
 - **AI Avatar** - Personalized AI assistant
+- **Payment Integration** - Razorpay for subscriptions and products
+- **Policy Pages** - Complete legal compliance
 
 ## 🛠️ Tech Stack
 
@@ -93,6 +128,7 @@ If you encounter **"Email not confirmed"** error when logging in:
 - **Authentication:** Supabase Auth
 - **Database:** Supabase (PostgreSQL)
 - **AI:** Google Gemini 2.0
+- **Payments:** Razorpay
 - **Routing:** React Router v6
 - **Icons:** Lucide React
 
@@ -110,7 +146,11 @@ The build output will be in the `dist` directory.
 
 1. Push your code to GitHub
 2. Import project in Vercel
-3. Add environment variables in Vercel dashboard
+3. Add environment variables in Vercel dashboard:
+   - `VITE_GEMINI_API_KEY`
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_RAZORPAY_KEY_ID` (optional)
 4. Deploy!
 
 ### Other Platforms
@@ -127,6 +167,12 @@ The app is a standard Vite React app and can be deployed to:
 - See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 - Check Supabase credentials in `.env`
 - Verify email confirmation is disabled
+
+### Payment Issues
+- See [RAZORPAY_SETUP.md](./RAZORPAY_SETUP.md)
+- Verify Razorpay API keys are correct
+- Check policy pages are accessible
+- Ensure KYC is completed
 
 ### Build Errors
 - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
@@ -152,9 +198,16 @@ For issues and questions:
 - Open an issue on GitHub
 - Check existing documentation
 - Review Supabase logs for authentication issues
+- Email: itskiranbabu.ai@gmail.com
+
+## 🔗 Links
+
+- **Live Demo:** https://kiran-babu-ai-unaw.vercel.app
+- **AI Studio:** https://ai.studio/apps/drive/1tL-5c2sHDTyz5PZy3aKWykmoubcj9l7j
+- **GitHub:** https://github.com/itskiranbabu/kiran-babu-ai
 
 ---
 
 **Built with ❤️ by Kiran Babu**
 
-View in AI Studio: https://ai.studio/apps/drive/1tL-5c2sHDTyz5PZy3aKWykmoubcj9l7j
+*Powered by Keyrun & ContentSpark*
