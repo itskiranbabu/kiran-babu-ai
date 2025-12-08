@@ -306,12 +306,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-dark-text uppercase tracking-wider mb-4">Legal</h4>
+            <h4 className="text-sm font-semibold text-dark-text uppercase tracking-wider mb-4">Legal & Support</h4>
             <ul className="space-y-3 text-dark-muted">
               <li><Link to="/privacy" className="hover:text-dark-text">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-dark-text">Terms of Service</Link></li>
-              <li><Link to="/book" className="hover:text-dark-text">Contact Support</Link></li>
-              <li><Link to="/dashboard" className="hover:text-dark-text">Client Portal</Link></li>
+              <li><Link to="/cancellation-refund" className="hover:text-dark-text">Cancellation & Refund</Link></li>
+              <li><Link to="/shipping" className="hover:text-dark-text">Shipping & Delivery</Link></li>
+              <li><Link to="/contact" className="hover:text-dark-text">Contact Us</Link></li>
             </ul>
           </div>
         </div>
