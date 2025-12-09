@@ -11,13 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
-import CancellationRefund from "./pages/CancellationRefund";
-import ShippingDelivery from "./pages/ShippingDelivery";
-import ContactUs from "./pages/ContactUs";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { ToastProvider } from "./components/ToastContext";
-import CookieConsent from "./components/CookieConsent";
 import { ThemeProvider } from "./components/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -31,6 +27,7 @@ import Referral from "./pages/Referral";
 import ClientPortal from "./pages/ClientPortal";
 import AIAvatar from "./pages/AIAvatar";
 import Templates from "./pages/Templates";
+
 // NEW FEATURES
 import Repurpose from "./pages/Repurpose";
 import Copilot from "./pages/Copilot";
@@ -39,6 +36,11 @@ import WorkflowDetail from "./pages/WorkflowDetail";
 import RunViewer from "./pages/RunViewer";
 import Calendar from "./pages/Calendar";
 import Onboarding from "./pages/Onboarding";
+
+// POLICY PAGES - NEW
+import CancellationRefunds from "./pages/CancellationRefunds";
+import Shipping from "./pages/Shipping";
+import ContactUs from "./pages/ContactUs";
 
 const App: React.FC = () => {
   return (
@@ -63,6 +65,13 @@ const App: React.FC = () => {
                 <Route path="/book" element={<BookCall />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/login" element={<Login />} />
+
+                {/* Policy Pages */}
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cancellation-refunds" element={<CancellationRefunds />} />
+                <Route path="/shipping" element={<Shipping />} />
+                <Route path="/contact" element={<ContactUs />} />
 
                 <Route
                   path="/onboarding"
@@ -168,17 +177,9 @@ const App: React.FC = () => {
                   <Route path="runs/:id" element={<RunViewer />} />
                 </Route>
 
-                {/* Policy Pages - Required for Razorpay */}
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/cancellation-refund" element={<CancellationRefund />} />
-                <Route path="/shipping" element={<ShippingDelivery />} />
-                <Route path="/contact" element={<ContactUs />} />
-                
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
-            <CookieConsent />
           </Router>
         </AuthProvider>
       </ToastProvider>
