@@ -19,12 +19,28 @@ const ContactUs: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    addToast('Message sent successfully! We\'ll get back to you within 24 hours.', 'success');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setIsSubmitting(false);
+    try {
+      // Create mailto link with form data
+      const mailtoLink = `mailto:itskiranbabu.ai@gmail.com?subject=${encodeURIComponent(
+        `[KeySpark Contact] ${formData.subject} - ${formData.name}`
+      )}&body=${encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}\n\n---\nSent from KeySpark AI Contact Form`
+      )}`;
+      
+      // Open user's email client
+      window.location.href = mailtoLink;
+      
+      // Show success message
+      addToast('Your email client has been opened. Please send the email to complete your message.', 'success');
+      
+      // Clear form
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error('Error opening email client:', error);
+      addToast('Error opening email client. Please email us directly at itskiranbabu.ai@gmail.com', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -37,7 +53,7 @@ const ContactUs: React.FC = () => {
   return (
     <div className="pt-16 pb-20 px-4 max-w-6xl mx-auto">
       <SEO 
-        title="Contact Us" 
+        title="Contact Us - KeySpark AI" 
         description="Get in touch with KeySpark AI for support, inquiries, or collaboration opportunities." 
       />
       
@@ -130,7 +146,7 @@ const ContactUs: React.FC = () => {
                   → Privacy Policy
                 </a>
                 <a 
-                  href="#/cancellation-refund" 
+                  href="#/cancellation-refunds" 
                   className="block text-brand-400 hover:text-brand-300 transition-colors"
                 >
                   → Cancellation & Refund Policy
@@ -214,13 +230,13 @@ const ContactUs: React.FC = () => {
                   className="w-full bg-[#18181b] border border-dark-border rounded-xl px-4 py-3 text-white focus:border-brand-500 focus:outline-none transition-all"
                 >
                   <option value="">Select a subject</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="support">Technical Support</option>
-                  <option value="billing">Billing & Payments</option>
-                  <option value="refund">Refund Request</option>
-                  <option value="partnership">Partnership Opportunity</option>
-                  <option value="feedback">Feedback</option>
-                  <option value="other">Other</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Technical Support">Technical Support</option>
+                  <option value="Billing & Payments">Billing & Payments</option>
+                  <option value="Refund Request">Refund Request</option>
+                  <option value="Partnership Opportunity">Partnership Opportunity</option>
+                  <option value="Feedback">Feedback</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
@@ -247,45 +263,23 @@ const ContactUs: React.FC = () => {
                 {isSubmitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Sending...
+                    Opening Email Client...
                   </>
                 ) : (
                   <>
-                    <Send size={18} />
+                    <Send size={20} />
                     Send Message
                   </>
                 )}
               </button>
 
-              <p className="text-sm text-gray-400 text-center">
-                We typically respond within 24 hours
+              <p className="text-xs text-gray-400 text-center mt-2">
+                This will open your default email client. Alternatively, email us directly at{' '}
+                <a href="mailto:itskiranbabu.ai@gmail.com" className="text-brand-400 hover:text-brand-300">
+                  itskiranbabu.ai@gmail.com
+                </a>
               </p>
             </form>
-          </div>
-        </div>
-
-        {/* Additional Information */}
-        <div className="mt-12 bg-dark-card border border-dark-border rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-white mb-4">Need Immediate Help?</h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div>
-              <h4 className="text-white font-semibold mb-2">📚 Documentation</h4>
-              <p className="text-gray-400 text-sm">
-                Check our comprehensive guides and tutorials for quick answers to common questions.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-2">💬 Community</h4>
-              <p className="text-gray-400 text-sm">
-                Join our community forum to connect with other users and get peer support.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-2">📞 Book a Call</h4>
-              <p className="text-gray-400 text-sm">
-                Schedule a consultation call for personalized assistance with your project.
-              </p>
-            </div>
           </div>
         </div>
       </FadeIn>
