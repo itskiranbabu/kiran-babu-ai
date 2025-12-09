@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Cookie } from 'lucide-react';
-import FadeIn from './FadeIn';
+import { Cookie, X } from 'lucide-react';
 
 const CookieConsent: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -9,8 +7,8 @@ const CookieConsent: React.FC = () => {
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
-      // Delay slightly so it doesn't pop up instantly
-      const timer = setTimeout(() => setIsVisible(true), 1500);
+      // Show after 3 seconds to not interrupt user experience
+      const timer = setTimeout(() => setIsVisible(true), 3000);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -20,41 +18,50 @@ const CookieConsent: React.FC = () => {
     setIsVisible(false);
   };
 
+  const handleDismiss = () => {
+    localStorage.setItem('cookie-consent', 'dismissed');
+    setIsVisible(false);
+  };
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <FadeIn>
-          <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-brand-900/20 text-brand-400 rounded-lg hidden sm:block">
-                <Cookie size={24} />
-              </div>
-              <div>
-                <h4 className="text-white font-bold mb-1">We use cookies</h4>
-                <p className="text-gray-400 text-sm max-w-xl">
-                  This website uses cookies to ensure you get the best experience on our website. 
-                  We don't track personal data without your permission.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3 w-full md:w-auto">
-              <button 
-                onClick={handleAccept}
-                className="flex-1 md:flex-none whitespace-nowrap px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-lg transition-colors"
+    <div className="fixed bottom-4 right-4 z-50 max-w-sm animate-slide-up">
+      <div className="bg-dark-card border border-dark-border rounded-xl shadow-2xl p-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-brand-500/10 text-brand-400 rounded-lg flex-shrink-0">
+            <Cookie size={20} />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-start justify-between mb-2">
+              <h4 className="text-white font-semibold text-sm">Cookie Notice</h4>
+              <button
+                onClick={handleDismiss}
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Dismiss"
               >
-                Accept All
+                <X size={16} />
               </button>
-              <button 
+            </div>
+            <p className="text-gray-400 text-xs mb-3">
+              We use essential cookies for authentication and preferences. No tracking without consent.
+            </p>
+            <div className="flex gap-2">
+              <button
                 onClick={handleAccept}
-                className="flex-1 md:flex-none whitespace-nowrap px-6 py-2 bg-dark-bg border border-dark-border hover:bg-white/5 text-gray-300 text-sm font-bold rounded-lg transition-colors"
+                className="flex-1 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg transition-colors"
               >
-                Necessary Only
+                Accept
+              </button>
+              <button
+                onClick={handleDismiss}
+                className="px-3 py-1.5 text-gray-400 hover:text-white text-xs font-semibold transition-colors"
+              >
+                Dismiss
               </button>
             </div>
           </div>
-        </FadeIn>
+        </div>
       </div>
     </div>
   );
