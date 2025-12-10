@@ -82,7 +82,6 @@ export const SERVICES: Service[] = [
     icon: Video,
     category: 'Content'
   },
-  // NEW SERVICES
   {
     id: 's5',
     title: 'RevenuePilot - Revenue Optimization',
@@ -142,135 +141,166 @@ export const SERVICES: Service[] = [
 ];
 
 export const PRODUCTS: Product[] = [
+  // NEW PRODUCTS - Featured
   {
     id: 'p1',
-    title: 'SaaS Business Hub',
-    description: 'The complete Notion system to manage your SaaS operations and growth.',
+    title: 'Creator Revenue HQ',
+    description: 'Digital Product Business OS - Complete system to manage and scale your digital product empire.',
     price: '$0+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/uwjgas',
+    featured: true
+  },
+  {
+    id: 'p2',
+    title: 'Habit Stacker Pro',
+    description: '90-Day Challenge - Transform your life with proven habit-building frameworks and daily tracking.',
+    price: '$0+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/lekonw',
+    featured: true
+  },
+  {
+    id: 'p3',
+    title: 'Affiliate Marketing Tracker',
+    description: 'Complete dashboard to track campaigns, commissions, and optimize your affiliate revenue streams.',
+    price: '$0+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/eilcwh',
+    featured: true
+  },
+  
+  // EXISTING PRODUCTS - Updated Pricing
+  {
+    id: 'p4',
+    title: 'SaaS Business Hub',
+    description: 'Complete Notion Template for Digital Product Creators | 15+ Components for SaaS operations.',
+    price: '$29',
     type: ProductType.NOTION_TEMPLATE,
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/crcrq',
     featured: true
   },
   {
-    id: 'p2',
+    id: 'p5',
     title: 'Freelance Business Hub',
-    description: 'Manage clients, projects, and invoices in one unified dashboard.',
-    price: '$29',
+    description: 'Notion Template for Client & Project Management - Manage clients, projects, and invoices seamlessly.',
+    price: '$28+',
     type: ProductType.NOTION_TEMPLATE,
     image: 'https://images.unsplash.com/photo-1664575602276-acd073f104c1?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/zkpdwi',
     featured: true
   },
   {
-    id: 'p3',
-    title: 'AI Prompt Power Pack',
-    description: '100+ Pro Templates for ChatGPT, Claude & Midjourney.',
-    price: '$49',
-    type: ProductType.PROMPT_PACK,
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/shlhrb',
-    featured: true
-  },
-  {
-    id: 'p4',
-    title: 'Content Creator Dashboard',
-    description: 'The ultimate planner for YouTube, TikTok & Instagram content.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/xxstk',
-    featured: true
-  },
-  {
-    id: 'p5',
-    title: 'Social Media Content Planner',
-    description: 'Streamline your content pipeline across all major platforms.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/ynnxj'
-  },
-  {
     id: 'p6',
-    title: 'Ultimate Productivity Hub',
-    description: 'Goal tracking, KPI dashboards, and daily task management.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/hquiq'
-  },
-  {
-    id: 'p7',
     title: 'Real Estate Portfolio Manager',
-    description: 'Track properties, tenants, and income with ease.',
-    price: '$0+',
+    description: 'Professional Notion Template | Property Tracking & Investment Analysis for real estate investors.',
+    price: '$27+',
     type: ProductType.NOTION_TEMPLATE,
     image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/dwicxr'
   },
   {
-    id: 'p8',
-    title: 'Wedding Planner System',
-    description: 'A comprehensive event management system for your big day.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/tvpwgvp'
-  },
-  {
-    id: 'p9',
-    title: 'Personal Finance Tracker',
-    description: 'Take control of your budget, expenses, and savings goals.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/haebsi'
-  },
-  {
-    id: 'p10',
-    title: 'Job Search & Career Tracker',
-    description: 'Organize applications, interviews, and networking contacts.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/knvwn'
-  },
-  {
-    id: 'p11',
-    title: 'Meal Planning & Recipe Manager',
-    description: 'Plan weekly meals and organize your favorite recipes.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/lcstdth'
-  },
-  {
-    id: 'p12',
-    title: 'Fitness & Wellness Planner',
-    description: 'Track workouts, nutrition, and wellness habits.',
-    price: '$0+',
-    type: ProductType.NOTION_TEMPLATE,
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
-    url: 'https://kiranbabuai.gumroad.com/l/armdis'
-  },
-  {
-    id: 'p13',
+    id: 'p7',
     title: 'Ultimate Productivity System',
-    description: 'For comprehensive life and goal management.',
-    price: '$0+',
+    description: 'Notion Template for Life & Goal Management - Comprehensive system for peak productivity.',
+    price: '$26+',
     type: ProductType.NOTION_TEMPLATE,
     image: 'https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/skjhz'
   },
   {
+    id: 'p8',
+    title: 'Content Creator Dashboard',
+    description: 'Notion Template for YouTube, TikTok & Instagram - Ultimate planner for content creators.',
+    price: '$24+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/xxstk'
+  },
+  {
+    id: 'p9',
+    title: 'Social Media Content Planner',
+    description: 'Notion Template for Instagram, TikTok, YouTube & More - Streamline your content pipeline.',
+    price: '$24+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1611926653458-09294b3142bf?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/ynnxj'
+  },
+  {
+    id: 'p10',
+    title: 'Personal Finance Tracker',
+    description: 'Complete Notion Template | Budget Planning & Expense Management - Take control of your finances.',
+    price: '$22+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/haebsi'
+  },
+  {
+    id: 'p11',
+    title: 'Fitness & Wellness Planner',
+    description: 'Notion Template - Track workouts, nutrition, and wellness habits for optimal health.',
+    price: '$21+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/armdis'
+  },
+  {
+    id: 'p12',
+    title: 'Meal Planning & Recipe Manager',
+    description: 'Notion Template - Plan weekly meals and organize your favorite recipes effortlessly.',
+    price: '$19+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/lcstdth'
+  },
+  {
+    id: 'p13',
+    title: 'Wedding Planner System',
+    description: 'Complete Notion Template | Comprehensive Event Organization for your perfect wedding day.',
+    price: '$18+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/tvpwgvp'
+  },
+  {
     id: 'p14',
+    title: 'AI Prompt Power Pack',
+    description: '100+ Pro Templates for ChatGPT, Claude & Midjourney - Unlock AI productivity.',
+    price: '$17+',
+    type: ProductType.PROMPT_PACK,
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/shlhrb'
+  },
+  {
+    id: 'p15',
+    title: 'Job Search & Career Tracker',
+    description: 'Notion Template - Organize applications, interviews, and networking contacts efficiently.',
+    price: '$16+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/knvwn'
+  },
+  {
+    id: 'p16',
     title: 'Student Success System',
-    description: 'The essential tool for academic organization and grades.',
-    price: '$0+',
+    description: 'Notion Template for Academic Organization - Essential tool for academic excellence.',
+    price: '$15+',
     type: ProductType.NOTION_TEMPLATE,
     image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80',
     url: 'https://kiranbabuai.gumroad.com/l/apvhdn'
+  },
+  {
+    id: 'p17',
+    title: 'Ultimate Productivity Hub',
+    description: 'Notion Template for Goal Tracking & KPI Dashboard - Master your productivity game.',
+    price: '$0+',
+    type: ProductType.NOTION_TEMPLATE,
+    image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80',
+    url: 'https://kiranbabuai.gumroad.com/l/hquiq'
   }
 ];
 
@@ -298,23 +328,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     category: 'Content',
     result: '100k Views in 30 Days',
     image: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?auto=format&fit=crop&w=800&q=80'
-  },
-  // NEW CASE STUDIES
-  {
-    id: 'c4',
-    client: 'E-commerce Brand',
-    title: 'RevenuePilot Implementation',
-    category: 'Growth',
-    result: '+65% Revenue in 90 Days',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
-  },
-  {
-    id: 'c5',
-    client: 'Local Service Business',
-    title: 'LocalLead Engine Deployment',
-    category: 'Marketing',
-    result: '150+ Qualified Leads/Month',
-    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -329,42 +342,56 @@ export const TESTIMONIALS = [
   {
     id: 't2',
     name: 'Sarah Chen',
-    role: 'Startup Founder',
-    text: "The website redesign was flawless. It's fast, looks premium, and we've seen a 30% increase in demo bookings since launch.",
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80'
+    role: 'SaaS Founder',
+    text: 'The workflow automation is a game-changer. What used to take me 3 hours now happens in 10 minutes. My team loves it.',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80'
   },
   {
     id: 't3',
     name: 'Marcus Johnson',
-    role: 'Fitness Coach',
-    text: "The AI prompt pack is a game changer. I used to spend hours on captions, now I generate a week's worth of content in 15 minutes.",
+    role: 'Freelance Designer',
+    text: 'Best investment I made this year. The CRM alone has helped me close 3x more deals. Highly recommend!',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80'
   }
 ];
 
-export const FAQS = [
+export const BRANDS: Brand[] = [
+  Brand.PERSONAL,
+  Brand.PRODUCT,
+  Brand.COMMUNITY
+];
+
+export const FAQ_ITEMS = [
   {
-    question: "What platforms do you build websites on?",
-    answer: "I specialize in modern, high-performance web development using Next.js and React. These technologies allow for blazing-fast speeds, SEO optimization, and completely custom designs that drag-and-drop builders like Wix or Squarespace can't match."
+    question: 'What is KeySpark AI?',
+    answer: 'KeySpark AI is an all-in-one Creator OS that combines AI-powered content repurposing, workflow automation, CRM, analytics, and productivity tools to help creators and entrepreneurs scale their digital businesses.'
   },
   {
-    question: "How long does a typical project take?",
-    answer: "Timelines vary by scope. A custom Notion system or simple landing page can be ready in 3-7 days. Full-scale websites and complex automation pipelines typically take 2-4 weeks. We'll agree on a strict timeline during our discovery call."
+    question: 'How does the AI content repurposing work?',
+    answer: 'Our AI analyzes your content and transforms it into platform-specific formats (Instagram Reels, LinkedIn posts, Twitter threads, YouTube Shorts) while maintaining your brand voice and optimizing for engagement.'
   },
   {
-    question: "Do you offer post-launch support?",
-    answer: "Absolutely. Every custom build comes with 30 days of complimentary support to ensure everything runs smoothly. I also offer monthly maintenance retainers for ongoing updates, content uploads, and system tweaks."
+    question: 'Can I try it before purchasing?',
+    answer: 'Yes! We offer a free tier with limited features so you can experience the platform. You can upgrade anytime to unlock unlimited access.'
   },
   {
-    question: "How does the Notion 'Second Brain' work?",
-    answer: "The Second Brain system is designed to capture ideas, manage projects, and organize resources all in one place. It uses the PARA method (Projects, Areas, Resources, Archives) to ensure you never lose a thought and always know what to work on next."
+    question: 'What payment methods do you accept?',
+    answer: 'We accept all major credit/debit cards, UPI, net banking, and digital wallets through our secure Razorpay payment gateway.'
   },
   {
-    question: "Can you automate my specific workflow?",
-    answer: "Yes. I use tools like Make.com (formerly Integromat) and Zapier to connect your favorite apps. Whether it's auto-posting to socials, syncing leads to your CRM, or generating contracts, if it has an API, I can likely automate it."
+    question: 'Do you offer refunds?',
+    answer: 'Yes, we offer a 7-day money-back guarantee for all paid plans. If you\'re not satisfied, contact us for a full refund.'
   },
   {
-    question: "What is your refund policy for digital products?",
-    answer: "Due to the digital nature of Notion templates and prompt packs, all sales are final. However, I provide comprehensive video walkthroughs and guides with every purchase to ensure you get maximum value from the product."
+    question: 'Is my data secure?',
+    answer: 'Absolutely. We use industry-standard encryption, secure authentication via Supabase, and follow best practices for data protection. Your data is never shared with third parties.'
+  },
+  {
+    question: 'Can I cancel my subscription anytime?',
+    answer: 'Yes, you can cancel your subscription at any time from your dashboard. You\'ll retain access until the end of your billing period.'
+  },
+  {
+    question: 'Do you provide customer support?',
+    answer: 'Yes! We offer email support for all users, with priority support for paid subscribers. Enterprise customers get dedicated account managers.'
   }
 ];
