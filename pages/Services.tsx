@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SectionHeader from '../components/SectionHeader';
 import { SERVICES, FAQS } from '../constants';
-import { Check, Copy, HelpCircle } from 'lucide-react';
+import { Check, Copy, HelpCircle, ExternalLink } from 'lucide-react';
 import BookingModal from '../components/BookingModal';
 import FadeIn from '../components/FadeIn';
 import SEO from '../components/SEO';
@@ -32,7 +31,7 @@ const Services: React.FC = () => {
 
   return (
     <div className="pt-16 pb-20 px-4 max-w-7xl mx-auto">
-      <SEO title="Services" description="Explore my services: Custom Websites, Notion Systems, and AI Automations." />
+      <SEO title="Services" description="Explore my services: Custom Websites, Notion Systems, AI Automations, Revenue Optimization, Lead Generation, and more." />
       
       <FadeIn>
         <SectionHeader 
@@ -90,18 +89,41 @@ const Services: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-3 mt-auto">
-                <button 
-                    onClick={() => setBookingService(service.title)}
-                    className="block w-full text-center py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                    Book Service
-                </button>
-                <Link 
-                    to={`/book?service=${encodeURIComponent(service.title)}`}
-                    className="block w-full text-center py-3 bg-transparent border border-dark-border text-white font-bold rounded-lg hover:border-brand-500 hover:text-brand-400 transition-colors"
-                >
-                    Apply to work with me
-                </Link>
+                {/* If service has external URL, show "View Platform" button */}
+                {service.url ? (
+                  <>
+                    <a 
+                      href={service.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      <ExternalLink size={20} />
+                      View Platform
+                    </a>
+                    <button 
+                      onClick={() => setBookingService(service.title)}
+                      className="block w-full text-center py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Book Consultation
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => setBookingService(service.title)}
+                      className="block w-full text-center py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Book Service
+                    </button>
+                    <Link 
+                      to={`/book?service=${encodeURIComponent(service.title)}`}
+                      className="block w-full text-center py-3 bg-transparent border border-dark-border text-white font-bold rounded-lg hover:border-brand-500 hover:text-brand-400 transition-colors"
+                    >
+                      Apply to work with me
+                    </Link>
+                  </>
+                )}
                 
                 <button 
                     onClick={() => handleCopyLink(service.title)}
