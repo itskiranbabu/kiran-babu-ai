@@ -20,7 +20,8 @@ export interface Service {
   priceStart: string;
   features: string[];
   icon: LucideIcon;
-  category: 'Development' | 'Systems' | 'Content' | 'Strategy';
+  category: 'Development' | 'Systems' | 'Content' | 'Strategy' | 'Growth' | 'Marketing' | 'Design';
+  url?: string; // Optional external URL for services like RevenuePilot
 }
 
 export interface Product {
