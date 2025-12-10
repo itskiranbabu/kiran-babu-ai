@@ -37,10 +37,14 @@ import RunViewer from "./pages/RunViewer";
 import Calendar from "./pages/Calendar";
 import Onboarding from "./pages/Onboarding";
 
-// POLICY PAGES - NEW
+// POLICY PAGES
 import CancellationRefunds from "./pages/CancellationRefunds";
 import Shipping from "./pages/Shipping";
 import ContactUs from "./pages/ContactUs";
+
+// PROFESSIONAL SAAS FEATURES
+import AIAssistant from "./pages/AIAssistant";
+import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 
 const App: React.FC = () => {
   return (
@@ -118,6 +122,22 @@ const App: React.FC = () => {
                   element={
                     <ProtectedRoute>
                       <Analytics />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/advanced-analytics"
+                  element={
+                    <ProtectedRoute>
+                      <AdvancedAnalytics />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ai-assistant"
+                  element={
+                    <ProtectedRoute>
+                      <AIAssistant />
                     </ProtectedRoute>
                   }
                 />
