@@ -6,7 +6,13 @@ import {
   BookOpen, 
   Users, 
   Monitor, 
-  Database 
+  Database,
+  TrendingUp,
+  MapPin,
+  Search,
+  Share2,
+  Mail,
+  Palette
 } from 'lucide-react';
 import { Brand, ProductType, Service, Product, CaseStudy } from './types';
 
@@ -75,6 +81,63 @@ export const SERVICES: Service[] = [
     features: ['Scripting & Hooks', 'AI Visuals & Editing', 'Sound Design', 'Trend Analysis'],
     icon: Video,
     category: 'Content'
+  },
+  // NEW SERVICES
+  {
+    id: 's5',
+    title: 'RevenuePilot - Revenue Optimization',
+    description: 'AI-powered revenue optimization platform to maximize your business growth and profitability.',
+    priceStart: '$999 / mo',
+    features: ['Revenue Analytics', 'Pricing Optimization', 'Conversion Tracking', 'Growth Forecasting'],
+    icon: TrendingUp,
+    category: 'Growth',
+    url: 'https://revenue-pilot-mkme0tsjf-babukiranb-3308s-projects.vercel.app/'
+  },
+  {
+    id: 's6',
+    title: 'LocalLead Engine - Lead Generation',
+    description: 'Automated local lead generation system to fill your pipeline with qualified prospects.',
+    priceStart: '$799 / mo',
+    features: ['Local SEO Optimization', 'Lead Capture Forms', 'CRM Integration', 'Automated Follow-ups'],
+    icon: MapPin,
+    category: 'Marketing',
+    url: 'https://local-lead-engine.vercel.app/'
+  },
+  {
+    id: 's7',
+    title: 'SEO Optimization Service',
+    description: 'Comprehensive SEO strategy to dominate search rankings and drive organic traffic.',
+    priceStart: '$1,500 / mo',
+    features: ['Technical SEO Audit', 'Keyword Research', 'Content Optimization', 'Link Building Strategy'],
+    icon: Search,
+    category: 'Marketing'
+  },
+  {
+    id: 's8',
+    title: 'Social Media Management',
+    description: 'Full-service social media management to build your brand and engage your audience.',
+    priceStart: '$1,200 / mo',
+    features: ['Content Calendar Creation', 'Post Scheduling', 'Engagement Tracking', 'Analytics Reporting'],
+    icon: Share2,
+    category: 'Marketing'
+  },
+  {
+    id: 's9',
+    title: 'Email Marketing Automation',
+    description: 'Strategic email campaigns that nurture leads and drive conversions on autopilot.',
+    priceStart: '$899 / mo',
+    features: ['Campaign Setup', 'List Segmentation', 'A/B Testing', 'Performance Tracking'],
+    icon: Mail,
+    category: 'Marketing'
+  },
+  {
+    id: 's10',
+    title: 'Brand Identity Design',
+    description: 'Professional brand identity that makes you stand out and attracts your ideal clients.',
+    priceStart: '$2,500',
+    features: ['Logo Design', 'Brand Guidelines', 'Marketing Materials', 'Social Media Assets'],
+    icon: Palette,
+    category: 'Design'
   }
 ];
 
@@ -235,6 +298,23 @@ export const CASE_STUDIES: CaseStudy[] = [
     category: 'Content',
     result: '100k Views in 30 Days',
     image: 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?auto=format&fit=crop&w=800&q=80'
+  },
+  // NEW CASE STUDIES
+  {
+    id: 'c4',
+    client: 'E-commerce Brand',
+    title: 'RevenuePilot Implementation',
+    category: 'Growth',
+    result: '+65% Revenue in 90 Days',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'c5',
+    client: 'Local Service Business',
+    title: 'LocalLead Engine Deployment',
+    category: 'Marketing',
+    result: '150+ Qualified Leads/Month',
+    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
