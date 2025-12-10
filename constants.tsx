@@ -29,11 +29,13 @@ export const NAVIGATION_LINKS = [
 
 export const SAAS_LINKS = [
     { label: 'Dashboard', path: '/dashboard' },
+    { label: 'AI Assistant', path: '/ai-assistant' },
     { label: 'Copilot Suite', path: '/copilot' },
     { label: 'Repurposer', path: '/repurpose' },
     { label: 'Calendar', path: '/calendar' },
     { label: 'CRM', path: '/crm' },
     { label: 'Analytics', path: '/analytics' },
+    { label: 'Advanced Analytics', path: '/advanced-analytics' },
     { label: 'Funnels', path: '/funnels' },
     { label: 'Templates', path: '/templates' },
 ];
