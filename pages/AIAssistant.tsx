@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, TrendingUp, Target, Zap, Brain, MessageSquare, BarChart3, Lightbulb } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { generateAIInsights, generateProductivityTips, analyzeUserActivity } from '../services/geminiService';
 
 interface Insight {
   id: string;
