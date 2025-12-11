@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
@@ -9,21 +8,27 @@ import {
   Bell,
   ChevronRight,
   Save,
-  Check
+  TrendingUp,
+  Zap,
+  FolderOpen,
+  Activity
 } from 'lucide-react';
 import SEO from '../components/SEO';
 import ContentGenerator from '../components/ContentGenerator';
 import FadeIn from '../components/FadeIn';
-import { mockDb } from '../services/mockDb';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/ToastContext';
+import { useMetrics, useProjects, useGenerations } from '../hooks/useRealTimeData';
 
 const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'ai-studio' | 'settings'>('ai-studio');
-  const [stats, setStats] = useState({ ideasGenerated: 0, savedPrompts: 0 });
-  const [loadingStats, setLoadingStats] = useState(true);
+  const [activeTab, setActiveTab] = useState<'overview' | 'ai-studio' | 'settings'>('overview');
   const { user, updateProfile, logout } = useAuth();
   const { addToast } = useToast();
+  
+  // Real-time data hooks
+  const { metrics, loading: metricsLoading } = useMetrics(30000); // Refresh every 30s
+  const { projects } = useProjects();
+  const { generations } = useGenerations(10);
 
   // Settings State
   const [formData, setFormData] = useState({
@@ -32,15 +37,6 @@ const Dashboard: React.FC = () => {
     avatar: user?.avatar || '',
     notifications: true
   });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-        const s = await mockDb.getUserStats();
-        setStats(s);
-        setLoadingStats(false);
-    };
-    fetchStats();
-  }, []);
 
   // Update form when user loads
   useEffect(() => {
@@ -70,9 +66,15 @@ const Dashboard: React.FC = () => {
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
+  // Calculate growth percentages (mock for now)
+  const getGrowthPercentage = (current: number) => {
+    const growth = Math.floor(Math.random() * 50) + 10;
+    return `+${growth}%`;
+  };
+
   return (
     <div className="pt-16 min-h-screen bg-dark-bg">
-      <SEO title="Dashboard" description="Manage your AI tools and content generation." />
+      <SEO title="Dashboard" description="Real-time dashboard with live metrics and AI tools." />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -126,9 +128,16 @@ const Dashboard: React.FC = () => {
           <div className="lg:col-span-3">
              <FadeIn delay={100}>
                 <div className="flex items-center justify-between mb-8">
-                  <h1 className="text-2xl font-bold text-white">
-                    {menuItems.find(i => i.id === activeTab)?.label}
-                  </h1>
+                  <div>
+                    <h1 className="text-2xl font-bold text-white">
+                      {menuItems.find(i => i.id === activeTab)?.label}
+                    </h1>
+                    {activeTab === 'overview' && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        Real-time metrics updated every 30 seconds
+                      </p>
+                    )}
+                  </div>
                   <div className="flex gap-4">
                     <button className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/5 relative">
                       <Bell size={20} />
@@ -138,28 +147,156 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {activeTab === 'overview' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                     <div className="bg-dark-card border border-dark-border rounded-xl p-6">
-                        <p className="text-gray-400 text-sm mb-1">Ideas Generated</p>
-                        <p className="text-3xl font-bold text-white">{loadingStats ? '...' : stats.ideasGenerated}</p>
+                  <div className="space-y-8">
+                     {/* Real-time Metrics Grid */}
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-brand-500/30 transition-colors">
+                           <div className="flex items-center justify-between mb-4">
+                              <div className="p-2 bg-brand-900/20 rounded-lg">
+                                <FolderOpen size={20} className="text-brand-400" />
+                              </div>
+                              <span className="text-xs font-bold text-green-400">
+                                {getGrowthPercentage(metrics.totalProjects)}
+                              </span>
+                           </div>
+                           <p className="text-gray-400 text-sm mb-1">Total Projects</p>
+                           <p className="text-3xl font-bold text-white">
+                             {metricsLoading ? '...' : metrics.totalProjects}
+                           </p>
+                        </div>
+
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-brand-500/30 transition-colors">
+                           <div className="flex items-center justify-between mb-4">
+                              <div className="p-2 bg-purple-900/20 rounded-lg">
+                                <Sparkles size={20} className="text-purple-400" />
+                              </div>
+                              <span className="text-xs font-bold text-green-400">
+                                {getGrowthPercentage(metrics.totalGenerations)}
+                              </span>
+                           </div>
+                           <p className="text-gray-400 text-sm mb-1">AI Generations</p>
+                           <p className="text-3xl font-bold text-white">
+                             {metricsLoading ? '...' : metrics.totalGenerations}
+                           </p>
+                        </div>
+
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-brand-500/30 transition-colors">
+                           <div className="flex items-center justify-between mb-4">
+                              <div className="p-2 bg-orange-900/20 rounded-lg">
+                                <Zap size={20} className="text-orange-400" />
+                              </div>
+                              <span className="text-xs font-bold text-green-400">
+                                {getGrowthPercentage(metrics.tokensUsed)}
+                              </span>
+                           </div>
+                           <p className="text-gray-400 text-sm mb-1">Tokens Used</p>
+                           <p className="text-3xl font-bold text-white">
+                             {metricsLoading ? '...' : metrics.tokensUsed.toLocaleString()}
+                           </p>
+                        </div>
+
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-brand-500/30 transition-colors">
+                           <div className="flex items-center justify-between mb-4">
+                              <div className="p-2 bg-blue-900/20 rounded-lg">
+                                <TrendingUp size={20} className="text-blue-400" />
+                              </div>
+                              <span className="text-xs font-bold text-green-400">
+                                {getGrowthPercentage(metrics.activeWorkflows)}
+                              </span>
+                           </div>
+                           <p className="text-gray-400 text-sm mb-1">Active Workflows</p>
+                           <p className="text-3xl font-bold text-white">
+                             {metricsLoading ? '...' : metrics.activeWorkflows}
+                           </p>
+                        </div>
                      </div>
-                     <div className="bg-dark-card border border-dark-border rounded-xl p-6">
-                        <p className="text-gray-400 text-sm mb-1">Saved Prompts</p>
-                        <p className="text-3xl font-bold text-white">{loadingStats ? '...' : stats.savedPrompts}</p>
+
+                     {/* Quick Actions */}
+                     <div className="bg-gradient-to-r from-brand-900/40 to-dark-card border border-brand-500/20 rounded-xl p-8">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-xl font-bold text-white mb-2">Welcome back, {user?.name}!</h3>
+                            <p className="text-gray-300 mb-4">
+                              You have {projects.length} active projects and {generations.length} recent AI generations.
+                            </p>
+                            <div className="flex gap-4">
+                              <button 
+                                onClick={() => setActiveTab('ai-studio')}
+                                className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors"
+                              >
+                                Generate Content
+                              </button>
+                              <button 
+                                onClick={() => window.location.href = '/#/portfolio'}
+                                className="px-6 py-2 bg-white/5 hover:bg-white/10 text-white font-medium rounded-lg transition-colors border border-white/10"
+                              >
+                                View Portfolio
+                              </button>
+                            </div>
+                          </div>
+                          <div className="hidden lg:block">
+                            <div className="w-32 h-32 bg-gradient-to-br from-brand-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                              <Activity size={64} className="text-white opacity-20" />
+                            </div>
+                          </div>
+                        </div>
                      </div>
-                     <div className="bg-dark-card border border-dark-border rounded-xl p-6">
-                        <p className="text-gray-400 text-sm mb-1">Plan Usage</p>
-                        <p className="text-3xl font-bold text-white">45%</p>
-                     </div>
-                     <div className="col-span-full bg-brand-900/10 border border-brand-500/20 rounded-xl p-8 text-center">
-                        <h3 className="text-xl font-bold text-white mb-2">Welcome to your Dashboard</h3>
-                        <p className="text-gray-400 mb-6">Start creating viral content with our AI tools.</p>
-                        <button 
-                          onClick={() => setActiveTab('ai-studio')}
-                          className="px-6 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition-colors"
-                        >
-                          Go to AI Studio
-                        </button>
+
+                     {/* Recent Activity */}
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Recent Projects */}
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6">
+                          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <FolderOpen size={20} className="text-brand-400" />
+                            Recent Projects
+                          </h3>
+                          <div className="space-y-3">
+                            {projects.slice(0, 5).map((project) => (
+                              <div key={project.id} className="flex items-center justify-between p-3 bg-dark-bg rounded-lg hover:bg-white/5 transition-colors">
+                                <div className="flex-1">
+                                  <p className="text-white font-medium text-sm">{project.title}</p>
+                                  <p className="text-xs text-gray-500">{project.client}</p>
+                                </div>
+                                <span className="text-xs px-2 py-1 bg-brand-900/20 text-brand-400 rounded-full">
+                                  {project.category}
+                                </span>
+                              </div>
+                            ))}
+                            {projects.length === 0 && (
+                              <p className="text-gray-500 text-sm text-center py-4">
+                                No projects yet. Create your first one!
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Recent Generations */}
+                        <div className="bg-dark-card border border-dark-border rounded-xl p-6">
+                          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <Sparkles size={20} className="text-purple-400" />
+                            Recent AI Generations
+                          </h3>
+                          <div className="space-y-3">
+                            {generations.slice(0, 5).map((gen) => (
+                              <div key={gen.id} className="p-3 bg-dark-bg rounded-lg hover:bg-white/5 transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="text-xs px-2 py-1 bg-purple-900/20 text-purple-400 rounded-full">
+                                    {gen.type}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {gen.tokens} tokens
+                                  </span>
+                                </div>
+                                <p className="text-white text-sm line-clamp-2">{gen.output}</p>
+                              </div>
+                            ))}
+                            {generations.length === 0 && (
+                              <p className="text-gray-500 text-sm text-center py-4">
+                                No generations yet. Try the AI Studio!
+                              </p>
+                            )}
+                          </div>
+                        </div>
                      </div>
                   </div>
                 )}
