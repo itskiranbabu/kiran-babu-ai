@@ -397,3 +397,6 @@ export const FAQ_ITEMS = [
     answer: 'Yes! We offer email support for all users, with priority support for paid subscribers. Enterprise customers get dedicated account managers.'
   }
 ];
+
+// Export alias for backward compatibility
+export const FAQS = FAQ_ITEMS;
